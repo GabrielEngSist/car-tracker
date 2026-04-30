@@ -4,10 +4,44 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Frontend (Vite) lives in sibling project folder -->
+    <SpaRoot>..\Car.Tracker.Presentation\</SpaRoot>
+    <UserSecretsId>c6c4c4c4-aaaa-aaaa-aaaa-ccccccccbbbb</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
+    <PackageReference Include="Npgsql" Version="10.0.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="$(SpaRoot)**" />
+    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot/**" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <Target Name="ClientBuild" BeforeTargets="GetCopyToPublishDirectoryItems">
+    <Message Importance="high" Text="Building client app (from $(SpaRoot))..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm ci" Condition="Exists('$(SpaRoot)package-lock.json')" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" Condition="!Exists('$(SpaRoot)package-lock.json')" />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+  </Target>
+
+  <Target Name="CopyClientDistToWwwroot" AfterTargets="ClientBuild" BeforeTargets="GetCopyToPublishDirectoryItems">
+    <ItemGroup>
+      <ClientDistFiles Include="$(SpaRoot)dist/**" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ClientDistFiles)" DestinationFolder="wwwroot/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

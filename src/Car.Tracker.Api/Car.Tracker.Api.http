@@ -1,6 +1,6 @@
-@Car.Tracker_HostAddress = http://localhost:5204
+@Car.Tracker.Api_HostAddress = http://localhost:5048
 
-GET {{Car.Tracker_HostAddress}}/weatherforecast/
+GET {{Car.Tracker.Api_HostAddress}}/api/cars
 Accept: application/json
 
 ###

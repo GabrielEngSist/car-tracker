@@ -3,21 +3,21 @@
   "compounds": [
     {
       "name": "Car.Tracker (full stack)",
-      "configurations": ["Car.Tracker.Presentation", "ClientApp (Chrome)"]
+      "configurations": ["Car.Tracker.Api", "ClientApp (Chrome)"]
     }
   ],
   "configurations": [
     {
-      "name": "Car.Tracker.Presentation",
+      "name": "Car.Tracker.Api",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/Car.Tracker.Presentation/bin/Debug/net10.0/Car.Tracker.Presentation.dll",
+      "program": "${workspaceFolder}/src/Car.Tracker.Api/bin/Debug/net10.0/Car.Tracker.Api.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/Car.Tracker.Presentation",
+      "cwd": "${workspaceFolder}/src/Car.Tracker.Api",
       "console": "integratedTerminal",
       "stopAtEntry": false,
-      "launchSettingsFilePath": "${workspaceFolder}/src/Car.Tracker.Presentation/Properties/launchSettings.json",
+      "launchSettingsFilePath": "${workspaceFolder}/src/Car.Tracker.Api/Properties/launchSettings.json",
       "launchSettingsProfileName": "http"
     },
     {
@@ -26,10 +26,10 @@
       "request": "launch",
       "preLaunchTask": "frontend:dev",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/src/Car.Tracker.Presentation/ClientApp/src"
+      "webRoot": "${workspaceFolder}/src/Car.Tracker.Presentation/src"
     },
     {
-      "name": "Car.Tracker.Presentation (attach)",
+      "name": "Car.Tracker.Api (attach)",
       "type": "coreclr",
       "request": "attach"
     }

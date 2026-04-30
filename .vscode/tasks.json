@@ -6,7 +6,7 @@
       "type": "process",
       "command": "npm",
       "options": {
-        "cwd": "${workspaceFolder}/src/Car.Tracker.Presentation/ClientApp"
+        "cwd": "${workspaceFolder}/src/Car.Tracker.Presentation"
       },
       "args": [
         "run",
@@ -28,8 +28,8 @@
         ],
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "vite v",
-          "endsPattern": "Local:.*http"
+          "beginsPattern": "[Vv]ITE\\s+v[0-9]",
+          "endsPattern": "Local:\\s+https?://[^\\s]+"
         }
       }
     },
@@ -39,7 +39,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/src/Car.Tracker.Presentation/Car.Tracker.Presentation.csproj",
+        "${workspaceFolder}/src/Car.Tracker.Api/Car.Tracker.Api.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
