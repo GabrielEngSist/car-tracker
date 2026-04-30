@@ -1,4 +1,9 @@
 {
+  "fuelingCreate": {
+    "title": "Ajouter un ravitaillement",
+    "fullTank": "Réservoir fait le plein — repère pour l’autonomie entre deux pleins",
+    "saving": "Enregistrement…"
+  },
   "carEdit": {
     "title": "Modifier la voiture",
     "nicknameLabel": "Surnom (optionnel)",

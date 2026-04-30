@@ -1,0 +1,31 @@
+{
+  "efficiency": {
+    "title": "Autonomie (entre deux pleins)",
+    "hint": "Seuls les intervalles entre deux marqueurs « plein » consécutifs comptent. Le filtre retient les intervalles dont la 2ᵉ borne est dans la fenêtre.",
+    "basisLabel": "Base",
+    "basisPeriod": "Par période",
+    "basisLifetime": "Tout l’historique",
+    "periodLabel": "Fenêtre",
+    "period_total": "Total",
+    "period_1d": "1 jour",
+    "period_1m": "30 jours",
+    "period_6m": "~6 mois",
+    "period_1y": "~1 an",
+    "calculating": "Calcul…",
+    "noIntervals": "Aucun intervalle valide. Cochez « plein » sur au moins deux enregistrements.",
+    "markersInWindow": "Marqueurs plein dans la fenêtre",
+    "intervalsUsed": "Intervalles utilisés",
+    "overallKmPerLiter": "Km/L (global)",
+    "overallLPer100": "L/100 km (global)",
+    "overallFuelCostPerKm": "Carburant / km",
+    "byFuelType": "Par type",
+    "fuelType": "Type",
+    "attribKm": "Km attrib.",
+    "intervalsHeading": "Détail des intervalles",
+    "seg": "Segment {{n}}",
+    "window": "Fenêtre {{start}} → {{end}}"
+  },
+  "list": {
+    "fullTankShort": "Plein"
+  }
+}

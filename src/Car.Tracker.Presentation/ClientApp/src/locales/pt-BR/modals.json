@@ -1,4 +1,9 @@
 {
+  "fuelingCreate": {
+    "title": "Adicionar abastecimento",
+    "fullTank": "Tanque completado (cheio) — marca ponto para cálculo de autonomia entre dois tanques cheios",
+    "saving": "Salvando…"
+  },
   "carEdit": {
     "title": "Editar carro",
     "nicknameLabel": "Apelido (opcional)",

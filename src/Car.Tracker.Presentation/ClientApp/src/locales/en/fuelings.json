@@ -1,0 +1,31 @@
+{
+  "efficiency": {
+    "title": "Range (between two full tanks)",
+    "hint": "Only intervals between consecutive full-tank markings count; liters are refuels after the first full marking through the second (inclusive). The filter keeps intervals whose closing full marking falls in the window.",
+    "basisLabel": "Basis",
+    "basisPeriod": "By period",
+    "basisLifetime": "All history",
+    "periodLabel": "Time window",
+    "period_total": "Total",
+    "period_1d": "1 day",
+    "period_1m": "30 days",
+    "period_6m": "~6 months",
+    "period_1y": "~1 year",
+    "calculating": "Calculating…",
+    "noIntervals": "No valid intervals in this window. Mark \"full tank\" on at least two entries and check odometer readings.",
+    "markersInWindow": "Full-tank markers in window",
+    "intervalsUsed": "Intervals used",
+    "overallKmPerLiter": "Km/L (combined)",
+    "overallLPer100": "L/100 km (combined)",
+    "overallFuelCostPerKm": "Fuel spend / km",
+    "byFuelType": "By fuel type",
+    "fuelType": "Type",
+    "attribKm": "Attrib. km",
+    "intervalsHeading": "Intervals detail",
+    "seg": "Segment {{n}}",
+    "window": "Window {{start}} → {{end}}"
+  },
+  "list": {
+    "fullTankShort": "Full"
+  }
+}

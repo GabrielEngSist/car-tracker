@@ -122,6 +122,8 @@ public sealed record CreateFuelingEntryRequest(
     decimal Liters,
     decimal TotalPrice,
     FuelType? FuelType,
+    /// <summary>Tanque completado neste abastecimento (marca intervalo para autonomia).</summary>
+    bool? IsFullTank,
     string? StationName,
     string? Notes);
 
@@ -133,6 +135,7 @@ public sealed record FuelingEntryDto(
     decimal Liters,
     decimal TotalPrice,
     FuelType FuelType,
+    bool IsFullTank,
     string? StationName,
     string? Notes);
 
@@ -142,6 +145,7 @@ public sealed record UpdateFuelingEntryRequest(
     decimal? Liters,
     decimal? TotalPrice,
     FuelType? FuelType,
+    bool? IsFullTank,
     string? StationName,
     string? Notes);
 

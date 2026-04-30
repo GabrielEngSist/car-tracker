@@ -21,7 +21,7 @@ type Props = {
 const FUEL_OPTIONS: FuelTypeDto[] = ['Gasolina', 'Alcool', 'Diesel', 'KV']
 
 export function FuelingCreateModal({ open, onClose, onCreated, prefilledCarId }: Props) {
-  const { t } = useTranslation(['common'])
+  const { t } = useTranslation(['common', 'modals'])
   const [cars, setCars] = useState<CarDto[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -32,6 +32,7 @@ export function FuelingCreateModal({ open, onClose, onCreated, prefilledCarId }:
   const [liters, setLiters] = useState<number>(0)
   const [totalPrice, setTotalPrice] = useState<number>(0)
   const [fuelType, setFuelType] = useState<FuelTypeDto>('Gasolina')
+  const [isFullTank, setIsFullTank] = useState(false)
   const [stationName, setStationName] = useState('')
   const [notes, setNotes] = useState('')
 
@@ -39,6 +40,7 @@ export function FuelingCreateModal({ open, onClose, onCreated, prefilledCarId }:
     if (!open) return
     setError(null)
     setCars(null)
+    setIsFullTank(false)
 
     if (prefilledCarId) {
       setCarId(prefilledCarId)
@@ -71,6 +73,7 @@ export function FuelingCreateModal({ open, onClose, onCreated, prefilledCarId }:
         liters,
         totalPrice,
         fuelType,
+        isFullTank,
         stationName: stationName.trim() ? stationName.trim() : null,
         notes: notes.trim() ? notes.trim() : null,
       })
@@ -90,7 +93,7 @@ export function FuelingCreateModal({ open, onClose, onCreated, prefilledCarId }:
           ✕
         </button>
 
-        <h3 id="fueling-create-title">Adicionar abastecimento</h3>
+        <h3 id="fueling-create-title">{t('modals:fuelingCreate.title')}</h3>
 
         <form onSubmit={onSubmit} className="gridForm" style={{ marginTop: 12 }}>
           {!prefilledCarId ? (
@@ -137,6 +140,11 @@ export function FuelingCreateModal({ open, onClose, onCreated, prefilledCarId }:
             </select>
           </label>
 
+          <label style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 10, gridColumn: '1 / -1' }}>
+            <input type="checkbox" checked={isFullTank} onChange={(e) => setIsFullTank(e.target.checked)} style={{ marginTop: 3 }} />
+            <span style={{ fontSize: 13, lineHeight: 1.35 }}>{t('modals:fuelingCreate.fullTank')}</span>
+          </label>
+
           <label>
             <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Posto (opcional)</div>
             <input value={stationName} onChange={(e) => setStationName(e.target.value)} placeholder="Shell" />
@@ -154,7 +162,7 @@ export function FuelingCreateModal({ open, onClose, onCreated, prefilledCarId }:
               {t('common:actions.cancel')}
             </button>
             <button type="submit" disabled={!canSave || saving}>
-              {saving ? 'Salvando…' : t('common:actions.save')}
+              {saving ? t('modals:fuelingCreate.saving') : t('common:actions.save')}
             </button>
           </div>
         </form>

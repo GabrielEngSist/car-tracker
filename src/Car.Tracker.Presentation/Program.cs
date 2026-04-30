@@ -273,11 +273,44 @@ cars.MapGet("/{carId:guid}/fuelings", async (Guid carId, AppDbContext db) =>
             x.Liters,
             x.TotalPrice,
             x.FuelType,
+            x.IsFullTank,
             x.StationName,
             x.Notes))
         .ToListAsync();
 
     return Results.Ok(items);
+});
+
+cars.MapGet("/{carId:guid}/reports/fuel-full-tank", async (
+    Guid carId,
+    string? basis,
+    string? period,
+    AppDbContext db) =>
+{
+    var car = await db.Cars.AsNoTracking().FirstOrDefaultAsync(c => c.Id == carId);
+    if (car is null) return Results.NotFound();
+
+    if (!CostPerKmReportQuery.ParseBasis(basis, out var lifetimeMode))
+        return Results.BadRequest("basis must be 'period' or 'lifetime'.");
+
+    PeriodAggregator periodAgg = PeriodAggregator.Total;
+    if (!lifetimeMode)
+    {
+        if (!CostPerKmReportQuery.TryParsePeriod(period, out periodAgg))
+            return Results.BadRequest("period invalid. Use total, 1d, 1m, 6m, 1y.");
+    }
+
+    var fuels = await db.FuelingEntries.AsNoTracking()
+        .Where(f => f.CarId == carId)
+        .ToListAsync();
+
+    var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+    var report = lifetimeMode
+        ? FuelFullTankEfficiencyCalculator.Compute(carId, car, fuels, lifetimeMode: true, PeriodAggregator.Total, today)
+        : FuelFullTankEfficiencyCalculator.Compute(carId, car, fuels, lifetimeMode: false, periodAgg, today);
+
+    return Results.Ok(report);
 });
 
 cars.MapGet("/{carId:guid}/reports/cost-per-km", async (
@@ -337,6 +370,7 @@ cars.MapPost("/{carId:guid}/fuelings", async (Guid carId, CreateFuelingEntryRequ
         Liters = request.Liters,
         TotalPrice = request.TotalPrice,
         FuelType = request.FuelType ?? FuelType.Gasolina,
+        IsFullTank = request.IsFullTank ?? false,
         StationName = string.IsNullOrWhiteSpace(request.StationName) ? null : request.StationName.Trim(),
         Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim(),
     };
@@ -357,6 +391,7 @@ cars.MapPost("/{carId:guid}/fuelings", async (Guid carId, CreateFuelingEntryRequ
         entry.Liters,
         entry.TotalPrice,
         entry.FuelType,
+        entry.IsFullTank,
         entry.StationName,
         entry.Notes));
 });
@@ -384,6 +419,8 @@ cars.MapPatch("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid
     }
     if (request.FuelType is not null)
         entry.FuelType = request.FuelType.Value;
+    if (request.IsFullTank is not null)
+        entry.IsFullTank = request.IsFullTank.Value;
     if (request.StationName is not null)
         entry.StationName = string.IsNullOrWhiteSpace(request.StationName) ? null : request.StationName.Trim();
     if (request.Notes is not null)
@@ -399,6 +436,7 @@ cars.MapPatch("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid
         entry.Liters,
         entry.TotalPrice,
         entry.FuelType,
+        entry.IsFullTank,
         entry.StationName,
         entry.Notes));
 });
@@ -425,6 +463,7 @@ app.MapGet("/api/fuelings", async (AppDbContext db) =>
             x.Liters,
             x.TotalPrice,
             x.FuelType,
+            x.IsFullTank,
             x.StationName,
             x.Notes))
         .ToListAsync();

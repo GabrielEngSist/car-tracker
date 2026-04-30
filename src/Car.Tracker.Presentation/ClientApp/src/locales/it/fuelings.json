@@ -1,0 +1,31 @@
+{
+  "efficiency": {
+    "title": "Autonomia (tra due serbatoi pieni)",
+    "hint": "Si considerano solo intervalli tra due segnazioni consecutive di tanica piena. Il filtro mantiene intervalli il cui secondo punto cade nella finestra.",
+    "basisLabel": "Base",
+    "basisPeriod": "Per periodo",
+    "basisLifetime": "Intera cronologia",
+    "periodLabel": "Finestra",
+    "period_total": "Totale",
+    "period_1d": "1 giorno",
+    "period_1m": "30 giorni",
+    "period_6m": "~6 mesi",
+    "period_1y": "~1 anno",
+    "calculating": "Calcolo…",
+    "noIntervals": "Nessun intervallo valido. Segna \"pieno\" su almeno due rifornimenti.",
+    "markersInWindow": "Segnalazioni piene nella finestra",
+    "intervalsUsed": "Intervalli usati",
+    "overallKmPerLiter": "Km/L (generale)",
+    "overallLPer100": "L/100 km (generale)",
+    "overallFuelCostPerKm": "Costo carburante / km",
+    "byFuelType": "Per tipo di carburante",
+    "fuelType": "Tipo",
+    "attribKm": "Km attrib.",
+    "intervalsHeading": "Dettaglio intervalli",
+    "seg": "Tratto {{n}}",
+    "window": "Finestra {{start}} → {{end}}"
+  },
+  "list": {
+    "fullTankShort": "Pieno"
+  }
+}

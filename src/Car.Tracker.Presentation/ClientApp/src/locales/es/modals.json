@@ -1,4 +1,9 @@
 {
+  "fuelingCreate": {
+    "title": "Añadir repostaje",
+    "fullTank": "Tanque llenado completo — ancla para autonomía entre dos llenos",
+    "saving": "Guardando…"
+  },
   "carEdit": {
     "title": "Editar coche",
     "nicknameLabel": "Apodo (opcional)",

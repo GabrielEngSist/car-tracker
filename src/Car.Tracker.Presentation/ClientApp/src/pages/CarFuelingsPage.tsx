@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { CarApi, type CarDto, type FuelingEntryDto } from '../api'
 import { CostPerKmReportPanel } from '../components/CostPerKmReportPanel'
+import { FuelFullTankEfficiencyPanel } from '../components/FuelFullTankEfficiencyPanel'
 import { FuelingCreateModal } from '../components/FuelingCreateModal'
 import { useTranslation } from 'react-i18next'
 
 export function CarFuelingsPage() {
-  useTranslation(['common'])
+  const { t } = useTranslation(['common', 'fuelings'])
   const { carId } = useParams()
   const [car, setCar] = useState<CarDto | null>(null)
   const [items, setItems] = useState<FuelingEntryDto[] | null>(null)
@@ -56,6 +57,10 @@ export function CarFuelingsPage() {
 
       <CostPerKmReportPanel carId={carId} title="Consumo × manutenção (custo médio)" />
 
+      <div style={{ marginTop: 14 }}>
+        <FuelFullTankEfficiencyPanel carId={carId} />
+      </div>
+
       <section className="card" style={{ marginTop: 14 }}>
         {items === null ? (
           <p style={{ margin: 0, opacity: 0.85 }}>Carregando…</p>
@@ -72,6 +77,9 @@ export function CarFuelingsPage() {
                 <li key={f.id} style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 12, background: 'var(--surface)' }}>
                   <div style={{ fontWeight: 800 }}>
                     {f.performedAt} · {f.kmAtFueling.toLocaleString()} km · {f.fuelType}
+                    {f.isFullTank ? (
+                      <span style={{ marginLeft: 8, fontSize: 12, opacity: 0.85, fontWeight: 600 }}>· {t('fuelings:list.fullTankShort')}</span>
+                    ) : null}
                   </div>
                   <div style={{ opacity: 0.85, fontSize: 13, marginTop: 4 }}>
                     {liters.toLocaleString(undefined, { maximumFractionDigits: 2 })} L ·{' '}

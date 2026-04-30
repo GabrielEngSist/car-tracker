@@ -27,6 +27,11 @@ import modalsPtBr from './locales/pt-BR/modals.json'
 import modalsEs from './locales/es/modals.json'
 import modalsFr from './locales/fr/modals.json'
 import modalsIt from './locales/it/modals.json'
+import fuelingsEn from './locales/en/fuelings.json'
+import fuelingsPtBr from './locales/pt-BR/fuelings.json'
+import fuelingsEs from './locales/es/fuelings.json'
+import fuelingsFr from './locales/fr/fuelings.json'
+import fuelingsIt from './locales/it/fuelings.json'
 
 export const DEFAULT_LANGUAGE = 'pt-BR'
 export const SUPPORTED_LANGUAGES = ['pt-BR', 'en', 'es', 'fr', 'it'] as const
@@ -40,7 +45,7 @@ void i18n
   .init({
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: [...SUPPORTED_LANGUAGES],
-    ns: ['common', 'cars', 'carDetails', 'maintenance', 'modals'],
+    ns: ['common', 'cars', 'carDetails', 'maintenance', 'modals', 'fuelings'],
     defaultNS: 'common',
     resources: {
       en: {
@@ -49,6 +54,7 @@ void i18n
         carDetails: carDetailsEn,
         maintenance: maintenanceEn,
         modals: modalsEn,
+        fuelings: fuelingsEn,
       },
       es: {
         common: commonEs,
@@ -56,6 +62,7 @@ void i18n
         carDetails: carDetailsEs,
         maintenance: maintenanceEs,
         modals: modalsEs,
+        fuelings: fuelingsEs,
       },
       fr: {
         common: commonFr,
@@ -63,6 +70,7 @@ void i18n
         carDetails: carDetailsFr,
         maintenance: maintenanceFr,
         modals: modalsFr,
+        fuelings: fuelingsFr,
       },
       it: {
         common: commonIt,
@@ -70,6 +78,7 @@ void i18n
         carDetails: carDetailsIt,
         maintenance: maintenanceIt,
         modals: modalsIt,
+        fuelings: fuelingsIt,
       },
       'pt-BR': {
         common: commonPtBr,
@@ -77,6 +86,7 @@ void i18n
         carDetails: carDetailsPtBr,
         maintenance: maintenancePtBr,
         modals: modalsPtBr,
+        fuelings: fuelingsPtBr,
       },
     },
     detection: {

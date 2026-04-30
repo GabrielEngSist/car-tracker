@@ -186,7 +186,7 @@ function ConsultaFipeBlock({ f }: { f: ConsultaPrecoFipeDto }) {
 }
 
 export function CarDetailsPage() {
-  const { t } = useTranslation(['common', 'carDetails'])
+  const { t } = useTranslation(['common', 'carDetails', 'fuelings'])
   const { carId } = useParams()
   const navigate = useNavigate()
   const [car, setCar] = useState<CarDto | null>(null)
@@ -599,6 +599,7 @@ export function CarDetailsPage() {
                 <li key={f.id} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 10 }}>
                   <div style={{ fontWeight: 700, fontSize: 13 }}>
                     {f.performedAt} · {f.kmAtFueling.toLocaleString()} km · {f.fuelType}
+                    {f.isFullTank ? <> · {t('fuelings:list.fullTankShort')}</> : null}
                   </div>
                   <div style={{ opacity: 0.85, fontSize: 13, marginTop: 4 }}>
                     {liters.toLocaleString(undefined, { maximumFractionDigits: 2 })} L ·{' '}

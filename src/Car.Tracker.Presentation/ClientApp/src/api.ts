@@ -152,6 +152,8 @@ export type FuelingEntryDto = {
   liters: number
   totalPrice: number
   fuelType: FuelTypeDto
+  /** Tanque completado neste lançamento (marca pontos para autonomia). */
+  isFullTank: boolean
   stationName: string | null
   notes: string | null
 }
@@ -183,6 +185,50 @@ export type CostReportQuery = {
   period: string
   /** total | km1 | km10 | km100 | km1000 */
   distanceRef: string
+}
+
+export type FuelTypeEfficiencyAggregateDto = {
+  fuelType: FuelTypeDto
+  totalLiters: number
+  attributedKm: number
+  averageKmPerLiter: number | null
+  totalFuelSpend: number
+  fuelCostPerKm: number | null
+}
+
+export type FuelFullTankIntervalDetailDto = {
+  segmentIndex: number
+  startPerformedAt: string
+  startKmAtFueling: number
+  endPerformedAt: string
+  endKmAtFueling: number
+  deltaKm: number
+  totalLitersInInterval: number
+  totalFuelPriceInInterval: number
+  averageKmPerLiter: number | null
+  fuelCostPerKm: number | null
+}
+
+export type FuelFullTankEfficiencyReportDto = {
+  carId: string
+  mode: string
+  periodVariant: string
+  aggregatorLabel: string
+  windowStartInclusive: string
+  windowEndInclusive: string
+  fullTankMarkersInWindow: number
+  intervalsUsedCount: number
+  overallAverageKmPerLiter: number | null
+  overallLitersPer100Km: number | null
+  overallFuelCostPerKm: number | null
+  byFuelType: FuelTypeEfficiencyAggregateDto[]
+  intervals: FuelFullTankIntervalDetailDto[]
+}
+
+export type FuelFullTankReportQuery = {
+  basis: 'period' | 'lifetime'
+  /** Quando basis=period — total | 1d | 1m | 6m | 1y */
+  period: string
 }
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
@@ -235,6 +281,11 @@ export const CarApi = {
   getCostPerKmReport: (carId: string, query: CostReportQuery) =>
     api<CostPerKmReportDto>(
       `/api/cars/${encodeURIComponent(carId)}/reports/cost-per-km?basis=${encodeURIComponent(query.basis)}&period=${encodeURIComponent(query.period)}&distanceRef=${encodeURIComponent(query.distanceRef)}`,
+    ),
+
+  getFuelFullTankReport: (carId: string, query: FuelFullTankReportQuery) =>
+    api<FuelFullTankEfficiencyReportDto>(
+      `/api/cars/${encodeURIComponent(carId)}/reports/fuel-full-tank?basis=${encodeURIComponent(query.basis)}&period=${encodeURIComponent(query.period)}`,
     ),
 
   listEntries: (carId: string) => api<ExpenseEntryDto[]>(`/api/cars/${carId}/entries`),

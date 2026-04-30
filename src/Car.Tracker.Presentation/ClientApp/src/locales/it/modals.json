@@ -1,4 +1,9 @@
 {
+  "fuelingCreate": {
+    "title": "Aggiungi rifornimento",
+    "fullTank": "Serbatoio riempito (pieno) — punto per il calcolo tra due pieni",
+    "saving": "Salvataggio…"
+  },
   "carEdit": {
     "title": "Modifica auto",
     "nicknameLabel": "Soprannome (opzionale)",

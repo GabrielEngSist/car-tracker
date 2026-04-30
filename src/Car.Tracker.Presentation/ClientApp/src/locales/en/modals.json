@@ -1,4 +1,9 @@
 {
+  "fuelingCreate": {
+    "title": "Add fueling",
+    "fullTank": "Tank filled to full — marks anchors for autonomy between consecutive full tanks",
+    "saving": "Saving…"
+  },
   "carEdit": {
     "title": "Edit car",
     "nicknameLabel": "Nickname (optional)",

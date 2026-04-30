@@ -8,7 +8,7 @@ function carLabel(c: CarDto) {
 }
 
 export function FuelingsPage() {
-  useTranslation(['common'])
+  const { t } = useTranslation(['common', 'fuelings'])
   const [cars, setCars] = useState<CarDto[] | null>(null)
   const [items, setItems] = useState<FuelingEntryDto[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -96,6 +96,7 @@ export function FuelingsPage() {
                         >
                           <div style={{ fontWeight: 700, fontSize: 13 }}>
                             {f.performedAt} · {f.kmAtFueling.toLocaleString()} km · {f.fuelType}
+                            {f.isFullTank ? <> · {t('fuelings:list.fullTankShort')}</> : null}
                             {f.stationName ? ` · ${f.stationName}` : ''}
                           </div>
                           <div style={{ opacity: 0.9, fontSize: 13, marginTop: 4 }}>

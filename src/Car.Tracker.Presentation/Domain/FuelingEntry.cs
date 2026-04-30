@@ -20,6 +20,9 @@ public sealed class FuelingEntry : AuditableEntity
     /// <summary>Combustível. Padrão <see cref="FuelType.Gasolina"/> quando não informado ao criar.</summary>
     public FuelType FuelType { get; set; } = FuelType.Gasolina;
 
+    /// <summary>Se <c>true</c>, o abastecimento completou o tanque (marca ponto para cálculo de autonomia entre dois cheios).</summary>
+    public bool IsFullTank { get; set; }
+
     public string? StationName { get; set; }
     public string? Notes { get; set; }
 }

@@ -1,0 +1,31 @@
+{
+  "efficiency": {
+    "title": "Autonomía (entre dos tanques llenos)",
+    "hint": "Solo cuentan intervalos entre marcaciones consecutivas de tanque lleno. El filtro mantiene intervalos cuya segunda marca queda dentro de la ventana.",
+    "basisLabel": "Base",
+    "basisPeriod": "Por período",
+    "basisLifetime": "Todo el historial",
+    "periodLabel": "Ventana",
+    "period_total": "Total",
+    "period_1d": "1 día",
+    "period_1m": "30 días",
+    "period_6m": "~6 meses",
+    "period_1y": "~1 año",
+    "calculating": "Calculando…",
+    "noIntervals": "Ningún intervalo válido. Marca \"tanque lleno\" en al menos dos repostajes.",
+    "markersInWindow": "Marcadores de lleno en la ventana",
+    "intervalsUsed": "Intervalos usados",
+    "overallKmPerLiter": "Km/L (total)",
+    "overallLPer100": "L/100 km (total)",
+    "overallFuelCostPerKm": "Gasto combustible / km",
+    "byFuelType": "Por tipo",
+    "fuelType": "Tipo",
+    "attribKm": "Km atrib.",
+    "intervalsHeading": "Detalle de intervalos",
+    "seg": "Tramo {{n}}",
+    "window": "Ventana {{start}} → {{end}}"
+  },
+  "list": {
+    "fullTankShort": "Lleno"
+  }
+}

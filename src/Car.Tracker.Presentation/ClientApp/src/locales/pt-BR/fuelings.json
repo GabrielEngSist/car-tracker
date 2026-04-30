@@ -1,0 +1,31 @@
+{
+  "efficiency": {
+    "title": "Autonomia (entre dois tanques cheios)",
+    "hint": "Só conta intervalos com dois marcadores consecutivos de tanque cheio; litros são os abastecimentos após o primeiro cheio até o segundo (incluindo esse). O filtro mantém apenas intervalos cuja segunda marcação fecha dentro da janela.",
+    "basisLabel": "Base",
+    "basisPeriod": "Por período",
+    "basisLifetime": "Todo o histórico",
+    "periodLabel": "Janela de tempo",
+    "period_total": "Total",
+    "period_1d": "1 dia",
+    "period_1m": "30 dias",
+    "period_6m": "~6 meses",
+    "period_1y": "~1 ano",
+    "calculating": "Calculando…",
+    "noIntervals": "Nenhum intervalo válido nesta janela. Marque \"tanque cheio\" em pelo menos dois lançamentos e verifique quilometragens.",
+    "markersInWindow": "Marcadores de tanque cheio na janela",
+    "intervalsUsed": "Intervalos usados",
+    "overallKmPerLiter": "Km/L (geral)",
+    "overallLPer100": "L/100 km (geral)",
+    "overallFuelCostPerKm": "Gasto combustível / km",
+    "byFuelType": "Por tipo de combustível",
+    "fuelType": "Tipo",
+    "attribKm": "Km atrib.",
+    "intervalsHeading": "Detalhe dos intervalos",
+    "seg": "Trecho {{n}}",
+    "window": "Janela {{start}} → {{end}}"
+  },
+  "list": {
+    "fullTankShort": "Cheio"
+  }
+}
