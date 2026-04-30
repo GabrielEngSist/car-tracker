@@ -2,12 +2,17 @@ using Car.Tracker.Presentation.Api;
 using Car.Tracker.Presentation.ConsultarPlacaModels;
 using Car.Tracker.Presentation.Data;
 using Car.Tracker.Presentation.Domain;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 using System.Net.Http;
 using System.Text.Json.Serialization;
+using Car.Tracker.Presentation.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 
 builder.Services.AddOpenApi();
@@ -19,6 +24,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.Configure<ConsultarPlacaOptions>(
     builder.Configuration.GetSection(ConsultarPlacaOptions.SectionName));
+builder.Services.Configure<DatabaseSettings>(
+    builder.Configuration.GetSection(DatabaseSettings.SectionName));
 builder.Services.AddTransient<ConsultarPlacaAuthHandler>();
 builder.Services.AddHttpClient<IConsultarPlacaClient, ConsultarPlacaHttpClient>((sp, client) =>
 {
@@ -40,11 +47,11 @@ builder.Services.AddHttpClient<IConsultarPrecoFipeClient, ConsultarPrecoFipeHttp
 })
 .AddHttpMessageHandler<ConsultarPlacaAuthHandler>();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>((svc, options) =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("CarTracker")
-                          ?? "Data Source=car-tracker.presentation.db";
-    options.UseSqlite(connectionString);
+    var settings = svc.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+    var connectionString = $"Host={settings.Host};Database={settings.Database};Username={settings.Username};Password={settings.Password};Port={settings.Port};SSL Mode=VerifyFull;Channel Binding=Require";
+    options.UseNpgsql(connectionString);
 });
 
 var app = builder.Build();
@@ -59,7 +66,7 @@ app.UseDeveloperExceptionPage();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await SqliteLegacySchemaSync.ApplyAsync(db);
+    await db.Database.MigrateAsync();
 }
 
 app.UseDefaultFiles();
