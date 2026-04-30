@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Car.Tracker/Car.Tracker.csproj" />
+    <ProjectReference Include="../Car.Tracker.Api/Car.Tracker.Api.csproj" />
     <ProjectReference Include="../Car.Tracker.Domain/Car.Tracker.Domain.csproj" />
     <ProjectReference Include="../Car.Tracker.Application/Car.Tracker.Application.csproj" />
     <ProjectReference Include="../Car.Tracker.Infrastructure/Car.Tracker.Infrastructure.csproj" />
