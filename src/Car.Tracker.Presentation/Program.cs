@@ -1,5 +1,4 @@
 using Car.Tracker.Presentation.Api;
-using Car.Tracker.Presentation.Configuration;
 using Car.Tracker.Presentation.ConsultarPlacaModels;
 using Car.Tracker.Presentation.Data;
 using Car.Tracker.Presentation.Domain;
@@ -10,9 +9,6 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Host: appsettings*.json (+ user secrets em Development), variáveis de ambiente e linha de comando.
-// Overlay explícito garante atualização por env depois das settings e antes do CLI (--Key valor).
-builder.Configuration.AddExplicitEnvironmentVariableOverlay();
 
 builder.Services.AddOpenApi();
 

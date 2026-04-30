@@ -15,11 +15,11 @@ public sealed class ConsultarPlacaOptions
     public const string SectionName = "ConsultarPlaca";
 
     /// <summary>Base URL da API (ex.: https://api.consultarplaca.com.br/v2).</summary>
-    public string Url { get; set; } = string.Empty;
+    public string? Url { get; set; }
 
     /// <summary>Usuário para autenticação HTTP Basic.</summary>
-    public string Email { get; set; } = string.Empty;
+    public string? Email { get; set; }
 
     /// <summary>Senha para autenticação HTTP Basic (API key).</summary>
-    public string ApiKey { get; set; } = string.Empty;
+    public string? ApiKey { get; set; }
 }

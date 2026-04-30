@@ -1,3 +1,12 @@
 {
-    "dotrush.roslyn.projectOrSolutionFiles": []
+    "dotrush.roslyn.projectOrSolutionFiles": [
+        "/Users/gabrielsilva/github.com/GabrielEngSist/car-tracker/src/Car.Tracker.Application/Car.Tracker.Application.csproj",
+        "/Users/gabrielsilva/github.com/GabrielEngSist/car-tracker/src/Car.Tracker.Contracts/Car.Tracker.Contracts.csproj",
+        "/Users/gabrielsilva/github.com/GabrielEngSist/car-tracker/src/Car.Tracker/Car.Tracker.csproj",
+        "/Users/gabrielsilva/github.com/GabrielEngSist/car-tracker/src/Car.Tracker.Domain/Car.Tracker.Domain.csproj",
+        "/Users/gabrielsilva/github.com/GabrielEngSist/car-tracker/src/Car.Tracker.Helpers/Car.Tracker.Helpers.csproj",
+        "/Users/gabrielsilva/github.com/GabrielEngSist/car-tracker/src/Car.Tracker.Infrastructure/Car.Tracker.Infrastructure.csproj",
+        "/Users/gabrielsilva/github.com/GabrielEngSist/car-tracker/src/Car.Tracker.Presentation/Car.Tracker.Presentation.csproj",
+        "/Users/gabrielsilva/github.com/GabrielEngSist/car-tracker/src/Car.Tracker.Tests/Car.Tracker.Tests.csproj"
+    ]
 }
