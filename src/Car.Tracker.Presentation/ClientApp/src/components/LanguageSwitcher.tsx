@@ -22,8 +22,8 @@ export function LanguageSwitcher() {
         style={{
           padding: '6px 8px',
           borderRadius: 10,
-          border: '1px solid rgba(255,255,255,0.16)',
-          background: 'rgba(255,255,255,0.08)',
+          border: '1px solid var(--control-border)',
+          background: 'var(--control-bg)',
           color: 'inherit',
         }}
         aria-label={t('language')}

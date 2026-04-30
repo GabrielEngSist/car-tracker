@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { CarApi, type MaintenancePlanItemDto, type MaintenanceStatusDto } from '../api'
 import { IconDelete, IconEdit, IconRow, IconToggleActive } from '../components/IconButtons'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { PlanEditModal } from '../components/PlanEditModal'
 import { useTranslation } from 'react-i18next'
 
@@ -80,8 +81,8 @@ export function MaintenancePage() {
   if (!carId) return <p>Missing car id.</p>
 
   return (
-    <div style={{ maxWidth: 980, margin: '0 auto', padding: 24 }}>
-      <header style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+    <div className="page">
+      <header className="pageHeader">
         <div>
           <div style={{ opacity: 0.8, fontSize: 13 }}>
             <Link to={`/cars/${carId}`}>{t('maintenance:backToCar')}</Link>
@@ -89,14 +90,17 @@ export function MaintenancePage() {
           <h1 style={{ margin: '8px 0 0' }}>{t('maintenance:title')}</h1>
           <p style={{ margin: '6px 0 0', opacity: 0.8 }}>{t('maintenance:subtitle')}</p>
         </div>
-        <LanguageSwitcher />
+        <div className="pageHeaderActions">
+          <ThemeToggle />
+          <LanguageSwitcher />
+        </div>
       </header>
 
-      {error ? <p style={{ color: 'salmon', marginTop: 12 }}>{error}</p> : null}
+      {error ? <p style={{ color: 'var(--danger)', marginTop: 12 }}>{error}</p> : null}
 
-      <section style={{ marginTop: 18, padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
+      <section className="card">
         <h2 style={{ marginTop: 0 }}>{t('maintenance:addItem.title')}</h2>
-        <form onSubmit={onCreate} style={{ display: 'grid', gridTemplateColumns: '1fr 180px 220px', gap: 12 }}>
+        <form onSubmit={onCreate} className="gridForm maintenanceCreate">
           <label>
             <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('maintenance:addItem.titleLabel')}</div>
             <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Oil change" required />
@@ -141,10 +145,10 @@ export function MaintenancePage() {
               <li
                 key={s.planItemId}
                 style={{
-                  border: '1px solid rgba(255,255,255,0.12)',
+                  border: '1px solid var(--border)',
                   borderRadius: 12,
                   padding: 12,
-                  background: s.overdue ? 'rgba(250, 128, 114, 0.12)' : undefined,
+                  background: s.overdue ? 'color-mix(in srgb, var(--danger) 16%, transparent)' : 'var(--surface)',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
@@ -185,7 +189,7 @@ export function MaintenancePage() {
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
             {plans.map((p) => (
-              <li key={p.id} style={{ border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: 12 }}>
+              <li key={p.id} style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 12, background: 'var(--surface)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
                   <div>
                     <div style={{ fontWeight: 700 }}>{p.title}</div>

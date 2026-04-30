@@ -9,6 +9,7 @@
     "it": "Italiano"
   },
   "actions": {
+    "add": "Añadir",
     "cancel": "Cancelar",
     "save": "Guardar",
     "close": "Cerrar",

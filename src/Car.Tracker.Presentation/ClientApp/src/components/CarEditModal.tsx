@@ -86,7 +86,7 @@ export function CarEditModal({ open, car, onClose, onSave }: Props) {
           <label>
             <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('modals:carEdit.plateLabel')}</div>
             <input value={placa} onChange={(e) => setPlaca(e.target.value)} placeholder="ABC1D23" spellCheck={false} />
-            {placaErro ? <div style={{ color: 'salmon', fontSize: 12, marginTop: 6 }}>{placaErro}</div> : null}
+            {placaErro ? <div style={{ color: 'var(--danger)', fontSize: 12, marginTop: 6 }}>{placaErro}</div> : null}
           </label>
           <div className="modal-actions">
             <button type="button" onClick={onClose}>

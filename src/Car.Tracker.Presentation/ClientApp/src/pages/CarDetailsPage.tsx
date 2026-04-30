@@ -13,6 +13,7 @@ import {
 import { CarEditModal } from '../components/CarEditModal'
 import { IconDelete, IconEdit, IconRow } from '../components/IconButtons'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { useTranslation } from 'react-i18next'
 
 function todayIsoDate(): string {
@@ -45,7 +46,7 @@ function infoRow(label: string, value: string | number | null | undefined, key: 
         gridTemplateColumns: 'minmax(140px, 200px) 1fr',
         gap: 10,
         padding: '6px 0',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: '1px solid color-mix(in srgb, var(--border) 55%, transparent)',
       }}
     >
       <div style={{ fontSize: 12, opacity: 0.75 }}>{label}</div>
@@ -168,7 +169,7 @@ function ConsultaFipeBlock({ f }: { f: ConsultaPrecoFipeDto }) {
                     overflow: 'auto',
                     maxHeight: 240,
                     borderRadius: 8,
-                    background: 'rgba(0,0,0,0.35)',
+                    background: 'color-mix(in srgb, var(--bg) 70%, transparent)',
                   }}
                 >
                   {prettyJson(it.historicoJson)}
@@ -362,8 +363,8 @@ export function CarDetailsPage() {
   if (!carId) return <p>Missing car id.</p>
 
   return (
-    <div style={{ maxWidth: 980, margin: '0 auto', padding: 24 }}>
-      <header style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+    <div className="page">
+      <header className="pageHeader" style={{ alignItems: 'flex-start' }}>
         <div>
           <div style={{ opacity: 0.8, fontSize: 13 }}>
             <Link to="/">{t('carDetails:backToCars')}</Link>
@@ -384,7 +385,8 @@ export function CarDetailsPage() {
             </div>
           ) : null}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="pageHeaderActions" style={{ alignItems: 'center' }}>
+          <ThemeToggle />
           <LanguageSwitcher />
           {car ? <div style={{ opacity: 0.85 }}>{car.currentKm.toLocaleString()} km</div> : null}
           {car ? (
@@ -396,9 +398,9 @@ export function CarDetailsPage() {
         </div>
       </header>
 
-      {error ? <p style={{ color: 'salmon', marginTop: 12 }}>{error}</p> : null}
+      {error ? <p style={{ color: 'var(--danger)', marginTop: 12 }}>{error}</p> : null}
 
-      <section style={{ marginTop: 18, padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
+      <section className="card">
         <button
           type="button"
           onClick={() => setLinkedOpen((o) => !o)}
@@ -426,12 +428,12 @@ export function CarDetailsPage() {
         {linkedOpen ? (
           <div style={{ marginTop: 16, marginLeft: 0 }}>
             {registryLoading ? <p style={{ opacity: 0.85 }}>Carregando…</p> : null}
-            {registryError ? <p style={{ color: 'salmon' }}>{registryError}</p> : null}
+            {registryError ? <p style={{ color: 'var(--danger)' }}>{registryError}</p> : null}
             {registry && !registryLoading ? (
               <div style={{ display: 'grid', gap: 20 }}>
                 <div>
                   <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.appTitle')}</h3>
-                  <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12 }}>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 12, background: 'var(--surface)' }}>
                     {infoRow('Modelo', registry.car.model, 'cad-m')}
                     {infoRow('Ano', registry.car.year, 'cad-y')}
                     {infoRow('Quilometragem', registry.car.currentKm, 'cad-km')}
@@ -444,7 +446,7 @@ export function CarDetailsPage() {
 
                 <div>
                   <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.plateTitle')}</h3>
-                  <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12 }}>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 12, background: 'var(--surface)' }}>
                     {registry.consultaPlaca ? (
                       <ConsultaPlacaBlock c={registry.consultaPlaca} />
                     ) : (
@@ -455,7 +457,7 @@ export function CarDetailsPage() {
 
                 <div>
                   <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.fipeTitle')}</h3>
-                  <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12 }}>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 12, background: 'var(--surface)' }}>
                     {registry.consultaPrecoFipe ? (
                       <ConsultaFipeBlock f={registry.consultaPrecoFipe} />
                     ) : (
@@ -466,7 +468,7 @@ export function CarDetailsPage() {
 
                 <div>
                   <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.entriesTitle')}</h3>
-                  <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12, maxHeight: 320, overflow: 'auto' }}>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 12, maxHeight: 320, overflow: 'auto', background: 'var(--surface)' }}>
                     {registry.expenseEntries.length === 0 ? (
                       <p style={{ margin: 0, opacity: 0.8 }}>{t('carDetails:additionalInfo.entriesEmpty')}</p>
                     ) : (
@@ -500,7 +502,7 @@ export function CarDetailsPage() {
 
                 <div>
                   <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.planTitle')}</h3>
-                  <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12 }}>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 12, background: 'var(--surface)' }}>
                     {registry.maintenancePlanItems.length === 0 ? (
                       <p style={{ margin: 0, opacity: 0.8 }}>
                         {t('carDetails:additionalInfo.planEmptyPrefix')}{' '}
@@ -541,8 +543,8 @@ export function CarDetailsPage() {
         ) : null}
       </section>
 
-      <section style={{ marginTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <div style={{ padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
+      <section className="grid2" style={{ marginTop: 18 }}>
+        <div style={{ padding: 16, border: '1px solid var(--border)', borderRadius: 12, background: 'var(--surface)' }}>
           <h2 style={{ marginTop: 0 }}>{t('carDetails:odometer.title')}</h2>
           <form onSubmit={onUpdateKm} style={{ display: 'flex', gap: 10, alignItems: 'end' }}>
             <label style={{ flex: 1 }}>
@@ -555,7 +557,7 @@ export function CarDetailsPage() {
           </form>
         </div>
 
-        <div style={{ padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
+        <div style={{ padding: 16, border: '1px solid var(--border)', borderRadius: 12, background: 'var(--surface)' }}>
           <h2 style={{ marginTop: 0 }}>{t('carDetails:maintenanceCard.title')}</h2>
           <p style={{ margin: 0, opacity: 0.8 }}>{t('carDetails:maintenanceCard.subtitle')}</p>
           <div style={{ marginTop: 10 }}>
@@ -564,9 +566,9 @@ export function CarDetailsPage() {
         </div>
       </section>
 
-      <section style={{ marginTop: 18, padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
+      <section className="card">
         <h2 style={{ marginTop: 0 }}>{editingEntryId ? t('carDetails:entryForm.editTitle') : t('carDetails:entryForm.addTitle')}</h2>
-        <form onSubmit={onSaveEntry} style={{ display: 'grid', gridTemplateColumns: '160px 1fr 160px 160px', gap: 12 }}>
+        <form onSubmit={onSaveEntry} className="gridForm carEntryForm">
           <label>
             <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.typeLabel')}</div>
             <select value={type} onChange={(e) => setType(e.target.value as ExpenseEntryType)}>
@@ -626,7 +628,7 @@ export function CarDetailsPage() {
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
             {entries.map((e) => (
-              <li key={e.id} style={{ border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: 12 }}>
+              <li key={e.id} style={{ border: '1px solid var(--border)', borderRadius: 12, padding: 12, background: 'var(--surface)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'flex-start' }}>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontWeight: 700 }}>
