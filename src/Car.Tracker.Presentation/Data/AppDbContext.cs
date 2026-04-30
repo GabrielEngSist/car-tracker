@@ -8,6 +8,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<CarEntity> Cars => Set<CarEntity>();
     public DbSet<ExpenseEntry> ExpenseEntries => Set<ExpenseEntry>();
     public DbSet<MaintenancePlanItem> MaintenancePlanItems => Set<MaintenancePlanItem>();
+    public DbSet<FuelingEntry> FuelingEntries => Set<FuelingEntry>();
     public DbSet<ConsultaPlaca> ConsultasPlaca => Set<ConsultaPlaca>();
     public DbSet<ConsultaPrecoFipe> ConsultasPrecoFipe => Set<ConsultaPrecoFipe>();
     public DbSet<ConsultaPrecoFipeItem> ConsultasPrecoFipeItens => Set<ConsultaPrecoFipeItem>();
@@ -163,6 +164,20 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             b.HasKey(x => x.Id);
             b.HasIndex(x => new { x.CarId, x.Active });
             b.Property(x => x.Title).HasMaxLength(200);
+
+            b.HasOne<CarEntity>()
+                .WithMany()
+                .HasForeignKey(x => x.CarId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<FuelingEntry>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.HasIndex(x => new { x.CarId, x.PerformedAt });
+            b.Property(x => x.FuelType).HasMaxLength(64);
+            b.Property(x => x.StationName).HasMaxLength(200);
+            b.Property(x => x.Notes).HasMaxLength(2000);
 
             b.HasOne<CarEntity>()
                 .WithMany()

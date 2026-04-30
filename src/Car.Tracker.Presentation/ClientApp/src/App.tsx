@@ -3,6 +3,8 @@ import { AppShell } from './components/AppShell'
 import { CarsPage } from './pages/CarsPage'
 import { CarDetailsPage } from './pages/CarDetailsPage'
 import { MaintenancePage } from './pages/MaintenancePage'
+import { FuelingsPage } from './pages/FuelingsPage'
+import { MaintenanceServicesPage } from './pages/MaintenanceServicesPage'
 import { SettingsPage } from './pages/SettingsPage'
 
 export default function App() {
@@ -10,6 +12,8 @@ export default function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route path="/" element={<CarsPage />} />
+        <Route path="/fuelings" element={<FuelingsPage />} />
+        <Route path="/maintenance-services" element={<MaintenanceServicesPage />} />
         <Route path="/cars/:carId" element={<CarDetailsPage />} />
         <Route path="/cars/:carId/maintenance" element={<MaintenancePage />} />
         <Route path="/settings" element={<SettingsPage />} />

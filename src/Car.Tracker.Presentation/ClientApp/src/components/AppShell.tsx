@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CarCreateModal } from './CarCreateModal'
 import { MaterialIcon } from './MaterialIcon'
+import { FuelingCreateModal } from './FuelingCreateModal'
 
 function NavItem({ to, label, icon }: { to: string; label: string; icon: React.ReactNode }) {
   return (
@@ -25,6 +26,7 @@ export function AppShell() {
   const navigate = useNavigate()
   const [addOpen, setAddOpen] = useState(false)
   const [createCarOpen, setCreateCarOpen] = useState(false)
+  const [createFuelingOpen, setCreateFuelingOpen] = useState(false)
 
   function closeAdd() {
     setAddOpen(false)
@@ -35,8 +37,10 @@ export function AppShell() {
       <aside className="sidebar" aria-label="Primary">
         <div className="sidebarBrand">{t('common:appName')}</div>
         <nav className="sidebarNav">
-          <NavItem to="/" label="Cars" icon={<MaterialIcon name="directions_car" size={20} />} />
-          <NavItem to="/settings" label="Settings" icon={<MaterialIcon name="settings" size={20} />} />
+          <NavItem to="/" label={t('common:nav.cars')} icon={<MaterialIcon name="directions_car" size={20} />} />
+          <NavItem to="/fuelings" label={t('common:nav.fuelings')} icon={<MaterialIcon name="local_gas_station" size={20} />} />
+          <NavItem to="/maintenance-services" label={t('common:nav.maintenance')} icon={<MaterialIcon name="build" size={20} />} />
+          <NavItem to="/settings" label={t('common:nav.settings')} icon={<MaterialIcon name="settings" size={20} />} />
         </nav>
       </aside>
 
@@ -46,7 +50,8 @@ export function AppShell() {
 
       {/* Mobile bottom nav */}
       <footer className="bottomNav" aria-label="Primary">
-        <NavItem to="/" label="Cars" icon={<MaterialIcon name="directions_car" size={22} />} />
+        <NavItem to="/" label={t('common:nav.cars')} icon={<MaterialIcon name="directions_car" size={22} />} />
+        <NavItem to="/fuelings" label={t('common:nav.fuelings')} icon={<MaterialIcon name="local_gas_station" size={22} />} />
         <button
           type="button"
           className="bottomAdd"
@@ -56,7 +61,8 @@ export function AppShell() {
         >
           <MaterialIcon name="add" size={28} />
         </button>
-        <NavItem to="/settings" label="Settings" icon={<MaterialIcon name="settings" size={22} />} />
+        <NavItem to="/maintenance-services" label={t('common:nav.maintenance')} icon={<MaterialIcon name="build" size={22} />} />
+        <NavItem to="/settings" label={t('common:nav.settings')} icon={<MaterialIcon name="settings" size={22} />} />
       </footer>
 
       {/* Desktop floating action button */}
@@ -84,7 +90,21 @@ export function AppShell() {
             >
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
                 <MaterialIcon name="directions_car" size={22} />
-                Add car
+                {t('common:addMenu.addCar')}
+              </span>
+            </button>
+            <button
+              type="button"
+              className="addMenuItem"
+              role="menuitem"
+              onClick={() => {
+                closeAdd()
+                setCreateFuelingOpen(true)
+              }}
+            >
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                <MaterialIcon name="local_gas_station" size={22} />
+                {t('common:addMenu.addFueling')}
               </span>
             </button>
             <button
@@ -99,7 +119,7 @@ export function AppShell() {
             >
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
                 <MaterialIcon name="payments" size={22} />
-                Add expense
+                {t('common:addMenu.addExpense')}
               </span>
             </button>
             <button
@@ -114,7 +134,7 @@ export function AppShell() {
             >
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
                 <MaterialIcon name="build" size={22} />
-                Add maintenance
+                {t('common:addMenu.addMaintenance')}
               </span>
             </button>
           </div>
@@ -127,6 +147,14 @@ export function AppShell() {
         onCreated={() => {
           // CarsPage refreshes on mount; navigate back to list.
           navigate('/')
+        }}
+      />
+
+      <FuelingCreateModal
+        open={createFuelingOpen}
+        onClose={() => setCreateFuelingOpen(false)}
+        onCreated={() => {
+          navigate('/fuelings')
         }}
       />
     </div>

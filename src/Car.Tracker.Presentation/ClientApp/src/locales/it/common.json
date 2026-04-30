@@ -17,6 +17,18 @@
     "edit": "Modifica",
     "open": "Apri"
   },
+  "nav": {
+    "cars": "Auto",
+    "fuelings": "Rifornimenti",
+    "maintenance": "Manutenzione",
+    "settings": "Impostazioni"
+  },
+  "addMenu": {
+    "addCar": "Aggiungi auto",
+    "addFueling": "Aggiungi rifornimento",
+    "addExpense": "Aggiungi spesa",
+    "addMaintenance": "Aggiungi manutenzione"
+  },
   "status": {
     "loading": "Caricamento…"
   },

@@ -142,6 +142,18 @@ export type MaintenanceStatusDto = {
   overdue: boolean
 }
 
+export type FuelingEntryDto = {
+  id: string
+  carId: string
+  performedAt: string // yyyy-mm-dd
+  kmAtFueling: number
+  liters: number
+  totalPrice: number
+  fuelType: string | null
+  stationName: string | null
+  notes: string | null
+}
+
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     headers: { 'content-type': 'application/json', ...(init?.headers ?? {}) },
@@ -174,6 +186,20 @@ export const CarApi = {
     body: { model?: string; year?: number; currentKm?: number; name?: string | null; placa?: string | null },
   ) => api<CarDto>(`/api/cars/${carId}`, { method: 'PATCH', body: JSON.stringify(body) }),
   deleteCar: (carId: string) => api<void>(`/api/cars/${carId}`, { method: 'DELETE' }),
+
+  listFuelings: () => api<FuelingEntryDto[]>('/api/fuelings'),
+  listFuelingsByCar: (carId: string) => api<FuelingEntryDto[]>(`/api/cars/${carId}/fuelings`),
+  createFueling: (
+    carId: string,
+    body: Omit<FuelingEntryDto, 'id' | 'carId'>,
+  ) => api<FuelingEntryDto>(`/api/cars/${carId}/fuelings`, { method: 'POST', body: JSON.stringify(body) }),
+  patchFueling: (
+    carId: string,
+    fuelingId: string,
+    body: Partial<Omit<FuelingEntryDto, 'id' | 'carId'>>,
+  ) => api<FuelingEntryDto>(`/api/cars/${carId}/fuelings/${fuelingId}`, { method: 'PATCH', body: JSON.stringify(body) }),
+  deleteFueling: (carId: string, fuelingId: string) =>
+    api<void>(`/api/cars/${carId}/fuelings/${fuelingId}`, { method: 'DELETE' }),
 
   listEntries: (carId: string) => api<ExpenseEntryDto[]>(`/api/cars/${carId}/entries`),
   createEntry: (carId: string, body: Omit<ExpenseEntryDto, 'id' | 'carId'>) =>

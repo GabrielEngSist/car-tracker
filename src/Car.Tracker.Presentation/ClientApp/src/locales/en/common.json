@@ -17,6 +17,18 @@
     "edit": "Edit",
     "open": "Open"
   },
+  "nav": {
+    "cars": "Cars",
+    "fuelings": "Fuelings",
+    "maintenance": "Maintenance",
+    "settings": "Settings"
+  },
+  "addMenu": {
+    "addCar": "Add car",
+    "addFueling": "Add fueling",
+    "addExpense": "Add expense",
+    "addMaintenance": "Add maintenance"
+  },
   "status": {
     "loading": "Loading…"
   },

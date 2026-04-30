@@ -256,6 +256,142 @@ cars.MapDelete("/{carId:guid}", async (Guid carId, AppDbContext db) =>
     return Results.NoContent();
 });
 
+cars.MapGet("/{carId:guid}/fuelings", async (Guid carId, AppDbContext db) =>
+{
+    var exists = await db.Cars.AnyAsync(x => x.Id == carId);
+    if (!exists) return Results.NotFound();
+
+    var items = await db.FuelingEntries
+        .Where(x => x.CarId == carId)
+        .OrderByDescending(x => x.PerformedAt)
+        .ThenByDescending(x => x.KmAtFueling)
+        .Select(x => new FuelingEntryDto(
+            x.Id,
+            x.CarId,
+            x.PerformedAt,
+            x.KmAtFueling,
+            x.Liters,
+            x.TotalPrice,
+            x.FuelType,
+            x.StationName,
+            x.Notes))
+        .ToListAsync();
+
+    return Results.Ok(items);
+});
+
+cars.MapPost("/{carId:guid}/fuelings", async (Guid carId, CreateFuelingEntryRequest request, AppDbContext db) =>
+{
+    var car = await db.Cars.FindAsync(carId);
+    if (car is null) return Results.NotFound();
+
+    if (request.KmAtFueling < 0) return Results.BadRequest("KmAtFueling is invalid.");
+    if (request.Liters <= 0) return Results.BadRequest("Liters must be > 0.");
+    if (request.TotalPrice < 0) return Results.BadRequest("TotalPrice is invalid.");
+
+    var entry = new FuelingEntry
+    {
+        CarId = carId,
+        PerformedAt = request.PerformedAt,
+        KmAtFueling = request.KmAtFueling,
+        Liters = request.Liters,
+        TotalPrice = request.TotalPrice,
+        FuelType = string.IsNullOrWhiteSpace(request.FuelType) ? null : request.FuelType.Trim(),
+        StationName = string.IsNullOrWhiteSpace(request.StationName) ? null : request.StationName.Trim(),
+        Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim(),
+    };
+
+    db.FuelingEntries.Add(entry);
+
+    // Atualiza o hodômetro se o abastecimento for mais recente.
+    if (entry.KmAtFueling > car.CurrentKm)
+        car.CurrentKm = entry.KmAtFueling;
+
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/api/cars/{carId}/fuelings/{entry.Id}", new FuelingEntryDto(
+        entry.Id,
+        entry.CarId,
+        entry.PerformedAt,
+        entry.KmAtFueling,
+        entry.Liters,
+        entry.TotalPrice,
+        entry.FuelType,
+        entry.StationName,
+        entry.Notes));
+});
+
+cars.MapPatch("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid fuelingId, UpdateFuelingEntryRequest request, AppDbContext db) =>
+{
+    var entry = await db.FuelingEntries.FirstOrDefaultAsync(e => e.Id == fuelingId && e.CarId == carId);
+    if (entry is null) return Results.NotFound();
+
+    if (request.PerformedAt is not null) entry.PerformedAt = request.PerformedAt.Value;
+    if (request.KmAtFueling is not null)
+    {
+        if (request.KmAtFueling.Value < 0) return Results.BadRequest("KmAtFueling is invalid.");
+        entry.KmAtFueling = request.KmAtFueling.Value;
+    }
+    if (request.Liters is not null)
+    {
+        if (request.Liters.Value <= 0) return Results.BadRequest("Liters must be > 0.");
+        entry.Liters = request.Liters.Value;
+    }
+    if (request.TotalPrice is not null)
+    {
+        if (request.TotalPrice.Value < 0) return Results.BadRequest("TotalPrice is invalid.");
+        entry.TotalPrice = request.TotalPrice.Value;
+    }
+    if (request.FuelType is not null)
+        entry.FuelType = string.IsNullOrWhiteSpace(request.FuelType) ? null : request.FuelType.Trim();
+    if (request.StationName is not null)
+        entry.StationName = string.IsNullOrWhiteSpace(request.StationName) ? null : request.StationName.Trim();
+    if (request.Notes is not null)
+        entry.Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
+
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new FuelingEntryDto(
+        entry.Id,
+        entry.CarId,
+        entry.PerformedAt,
+        entry.KmAtFueling,
+        entry.Liters,
+        entry.TotalPrice,
+        entry.FuelType,
+        entry.StationName,
+        entry.Notes));
+});
+
+cars.MapDelete("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid fuelingId, AppDbContext db) =>
+{
+    var entry = await db.FuelingEntries.FirstOrDefaultAsync(e => e.Id == fuelingId && e.CarId == carId);
+    if (entry is null) return Results.NotFound();
+    db.FuelingEntries.Remove(entry);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
+
+app.MapGet("/api/fuelings", async (AppDbContext db) =>
+{
+    var items = await db.FuelingEntries
+        .OrderByDescending(x => x.PerformedAt)
+        .ThenByDescending(x => x.KmAtFueling)
+        .Select(x => new FuelingEntryDto(
+            x.Id,
+            x.CarId,
+            x.PerformedAt,
+            x.KmAtFueling,
+            x.Liters,
+            x.TotalPrice,
+            x.FuelType,
+            x.StationName,
+            x.Notes))
+        .ToListAsync();
+
+    return Results.Ok(items);
+});
+
 cars.MapGet("/{carId:guid}/entries", async (Guid carId, AppDbContext db) =>
 {
     var exists = await db.Cars.AnyAsync(x => x.Id == carId);

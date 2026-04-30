@@ -116,6 +116,35 @@ public sealed record UpdateExpenseEntryRequest(
     int? KmAtService,
     string? Notes);
 
+public sealed record CreateFuelingEntryRequest(
+    DateOnly PerformedAt,
+    int KmAtFueling,
+    decimal Liters,
+    decimal TotalPrice,
+    string? FuelType,
+    string? StationName,
+    string? Notes);
+
+public sealed record FuelingEntryDto(
+    Guid Id,
+    Guid CarId,
+    DateOnly PerformedAt,
+    int KmAtFueling,
+    decimal Liters,
+    decimal TotalPrice,
+    string? FuelType,
+    string? StationName,
+    string? Notes);
+
+public sealed record UpdateFuelingEntryRequest(
+    DateOnly? PerformedAt,
+    int? KmAtFueling,
+    decimal? Liters,
+    decimal? TotalPrice,
+    string? FuelType,
+    string? StationName,
+    string? Notes);
+
 public sealed record CreateMaintenancePlanItemRequest(
     string Title,
     int? DueKmInterval,

@@ -17,6 +17,18 @@
     "edit": "Editar",
     "open": "Abrir"
   },
+  "nav": {
+    "cars": "Carros",
+    "fuelings": "Abastecimentos",
+    "maintenance": "Manutenções",
+    "settings": "Configurações"
+  },
+  "addMenu": {
+    "addCar": "Adicionar carro",
+    "addFueling": "Adicionar abastecimento",
+    "addExpense": "Adicionar despesa",
+    "addMaintenance": "Adicionar manutenção"
+  },
   "status": {
     "loading": "Carregando…"
   },

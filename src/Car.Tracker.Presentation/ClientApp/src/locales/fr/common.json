@@ -17,6 +17,18 @@
     "edit": "Modifier",
     "open": "Ouvrir"
   },
+  "nav": {
+    "cars": "Voitures",
+    "fuelings": "Plein",
+    "maintenance": "Maintenance",
+    "settings": "Paramètres"
+  },
+  "addMenu": {
+    "addCar": "Ajouter une voiture",
+    "addFueling": "Ajouter un plein",
+    "addExpense": "Ajouter une dépense",
+    "addMaintenance": "Ajouter une maintenance"
+  },
   "status": {
     "loading": "Chargement…"
   },
