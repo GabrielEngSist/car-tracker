@@ -1,0 +1,62 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "frontend:dev",
+      "type": "process",
+      "command": "npm",
+      "options": {
+        "cwd": "${workspaceFolder}/src/Car.Tracker.Presentation/ClientApp"
+      },
+      "args": [
+        "run",
+        "dev"
+      ],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": [
+          {
+            "regexp": "^(?:\\s*\\[?ERROR\\]?|\\s*Error)\\s*:?\\s+(.*)$",
+            "message": 1
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "vite v",
+          "endsPattern": "Local:.*http"
+        }
+      }
+    },
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Car.Tracker.Presentation/Car.Tracker.Presentation.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dev:all",
+      "dependsOn": ["frontend:dev", "build"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}

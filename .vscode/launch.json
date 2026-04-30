@@ -1,0 +1,37 @@
+{
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Car.Tracker (full stack)",
+      "configurations": ["Car.Tracker.Presentation", "ClientApp (Chrome)"]
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Car.Tracker.Presentation",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Car.Tracker.Presentation/bin/Debug/net10.0/Car.Tracker.Presentation.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Car.Tracker.Presentation",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "launchSettingsFilePath": "${workspaceFolder}/src/Car.Tracker.Presentation/Properties/launchSettings.json",
+      "launchSettingsProfileName": "http"
+    },
+    {
+      "name": "ClientApp (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "frontend:dev",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src/Car.Tracker.Presentation/ClientApp/src"
+    },
+    {
+      "name": "Car.Tracker.Presentation (attach)",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}

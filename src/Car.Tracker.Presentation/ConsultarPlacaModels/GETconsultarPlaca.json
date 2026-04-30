@@ -1,0 +1,45 @@
+/*
+Parâmetros:
+    - Nome: placa
+    Tipo: string
+    Descrição: Placa do Veículo. Placa deve possuir os seguintes formatos: AAA0000 ou AAA09A00
+*/
+{
+    "status": "ok",
+    "mensagem": "Consulta realizada com sucesso!",
+    "data_solicitacao": "2020-11-22 16:54:10",
+    "dados": {
+        "informacoes_veiculo": {
+            "dados_veiculo": {
+                "placa": "AAA9999",
+                "chassi": "9AAAA99AAAA999999",
+                "ano_fabricacao": "2014",
+                "ano_modelo": "2015",
+                "marca": "HYUNDAI",
+                "modelo": "HYUNDAI/HB20 1.0M COMFOR",
+                "cor": "Branca",
+                "segmento": "Auto",
+                "combustivel": "Álcool / Gasolina",
+                "procedencia": "Nacional",
+                "municipio": "MARINGA",
+                "uf_municipio": "PR"
+            },
+            "dados_tecnicos": {
+                "tipo_veiculo": "Automovel",
+                "sub_segmento": "AU - HATCH PEQUENO",
+                "numero_motor": "A9AAAA999999",
+                "numero_caixa_cambio": "AA999999999",
+                "potencia": "80",
+                "cilindradas": "998"
+            },
+            "dados_carga": {
+                "numero_eixos": "2",
+                "capacidade_maxima_tracao": "182",
+                "capacidade_passageiro": "5"
+            }
+        }
+    },
+    "request": {
+        "placa": "AAA9999"
+    }
+}

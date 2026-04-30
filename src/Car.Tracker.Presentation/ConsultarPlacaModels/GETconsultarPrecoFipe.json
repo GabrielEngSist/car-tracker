@@ -1,0 +1,148 @@
+/*
+Parâmetros:
+    - Nome: placa
+    Tipo: string
+    Descrição: Placa do Veículo. Placa deve possuir os seguintes formatos: AAA0000 ou AAA09A00
+*/
+{
+    "status": "ok",
+    "mensagem": "Consulta EXEMPLO realizada com sucesso!",
+    "data_solicitacao": "2025-05-01 15:57:51",
+    "dados": {
+        "informacoes_veiculo": {
+            "dados_veiculo": {
+                "placa": "AAA0000",
+                "chassi": "0AAAA00AAAA000000",
+                "ano_frabricacao": "2014",
+                "ano_modelo": "2015",
+                "marca": "HYUNDAI",
+                "modelo": "HB20 1.0M COMFOR",
+                "cor": "Branca",
+                "segmento": "Auto",
+                "combustivel": "Alcool / Gasolina",
+                "procedencia": "Nacional",
+                "municipio": "MARINGA",
+                "uf_municipio": "PR"
+            },
+            "dados_tecnicos": {
+                "tipo_veiculo": "Automovel",
+                "sub_segmento": "AU - HATCH PEQUENO",
+                "numero_motor": "F3LAEU240650",
+                "numero_caixa_cambio": "HA140792745",
+                "potencia": "80",
+                "cilindradas": "998"
+            },
+            "dados_carga": {
+                "numero_eixos": "2",
+                "capacidade_maxima_tracao": "182",
+                "capacidade_passageiro": "5",
+                "peso_bruto_total": "142"
+            }
+        },
+        "informacoes_fipe": [
+            {
+                "codigo_fipe": "015099-1",
+                "modelo_versao": "HB20S C.Plus/C.Style1.0 Flex 12V Mec. 4P",
+                "preco": "43208.00",
+                "mes_referencia": "2025_04",
+                "historico": {
+                    "2024_05": "45989.00",
+                    "2024_06": "44543.00",
+                    "2024_07": "44166.00",
+                    "2024_08": "44033.00",
+                    "2024_09": "43823.00",
+                    "2024_10": "43624.00",
+                    "2024_11": "43553.00",
+                    "2024_12": "43031.00",
+                    "2025_01": "42815.00",
+                    "2025_02": "42975.00",
+                    "2025_03": "43052.00",
+                    "2025_04": "43208.00"
+                }
+            },
+            {
+                "codigo_fipe": "015116-5",
+                "modelo_versao": "HB20S For You 1.0 Flex 12V 4p",
+                "preco": "40634.00",
+                "mes_referencia": "2025_04",
+                "historico": {
+                    "2024_05": "45155.00",
+                    "2024_06": "43574.00",
+                    "2024_07": "42048.00",
+                    "2024_08": "41316.00",
+                    "2024_09": "41061.00",
+                    "2024_10": "39623.00",
+                    "2024_11": "38944.00",
+                    "2024_12": "37580.00",
+                    "2025_01": "36941.00",
+                    "2025_02": "38233.00",
+                    "2025_03": "39571.00",
+                    "2025_04": "40634.00"
+                }
+            },
+            {
+                "codigo_fipe": "015109-2",
+                "modelo_versao": "HB20 Copa do Mundo 1.0 Flex 12V Mec.",
+                "preco": "41515.00",
+                "mes_referencia": "2025_04",
+                "historico": {
+                    "2024_05": "43877.00",
+                    "2024_06": "43579.00",
+                    "2024_07": "43361.00",
+                    "2024_08": "43103.00",
+                    "2024_09": "42839.00",
+                    "2024_10": "42624.00",
+                    "2024_11": "42570.00",
+                    "2024_12": "42357.00",
+                    "2025_01": "42145.00",
+                    "2025_02": "41934.00",
+                    "2025_03": "41724.00",
+                    "2025_04": "41515.00"
+                }
+            },
+            {
+                "codigo_fipe": "015115-7",
+                "modelo_versao": "HB20 For You 1.0 Flex 12V 5p",
+                "preco": "40803.00",
+                "mes_referencia": "2025_04",
+                "historico": {
+                    "2024_05": "43001.00",
+                    "2024_06": "41785.00",
+                    "2024_07": "41432.00",
+                    "2024_08": "41953.00",
+                    "2024_09": "41421.00",
+                    "2024_10": "41456.00",
+                    "2024_11": "41024.00",
+                    "2024_12": "41375.00",
+                    "2025_01": "40819.00",
+                    "2025_02": "41761.00",
+                    "2025_03": "40927.00",
+                    "2025_04": "40803.00"
+                }
+            },
+            {
+                "codigo_fipe": "015112-2",
+                "modelo_versao": "HB20S Copa do Mundo 1.0 Flex 12V Mec.",
+                "preco": "43834.00",
+                "mes_referencia": "2025_04",
+                "historico": {
+                    "2024_05": "46231.00",
+                    "2024_06": "46258.00",
+                    "2024_07": "46035.00",
+                    "2024_08": "46843.00",
+                    "2024_09": "45264.00",
+                    "2024_10": "45426.00",
+                    "2024_11": "43996.00",
+                    "2024_12": "43468.00",
+                    "2025_01": "43250.00",
+                    "2025_02": "43596.00",
+                    "2025_03": "43675.00",
+                    "2025_04": "43834.00"
+                }
+            }
+        ]
+    },
+    "request": {
+        "placa": "AAA0000"
+    }
+}
