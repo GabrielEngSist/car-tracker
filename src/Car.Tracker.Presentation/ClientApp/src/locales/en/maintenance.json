@@ -1,5 +1,8 @@
 {
   "backToCar": "← Car",
+  "costReport": {
+    "title": "Fuel × maintenance (average cost)"
+  },
   "title": "Maintenance",
   "subtitle": "“Whichever comes first” (km or time).",
   "addItem": {

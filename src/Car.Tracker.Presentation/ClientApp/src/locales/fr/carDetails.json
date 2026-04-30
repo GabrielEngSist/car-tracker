@@ -23,7 +23,14 @@
   "maintenanceCard": {
     "title": "Maintenance",
     "subtitle": "Liste des prochaines échéances (km ou temps, selon le premier atteint).",
-    "open": "Ouvrir la maintenance"
+    "open": "Ouvrir la maintenance",
+    "openFuelings": "Ravitaillements"
+  },
+  "costReportTitle": "Consommation × entretien (coût moyen)",
+  "fuelingsCard": {
+    "title": "Ravitaillements récents",
+    "viewAll": "Voir tous les ravitaillements",
+    "empty": "Aucun ravitaillement."
   },
   "entryForm": {
     "addTitle": "Ajouter service / pièce",

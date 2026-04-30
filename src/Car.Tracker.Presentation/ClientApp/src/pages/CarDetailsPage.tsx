@@ -9,7 +9,9 @@ import {
   type ConsultaPrecoFipeItemDto,
   type ExpenseEntryDto,
   type ExpenseEntryType,
+  type FuelingEntryDto,
 } from '../api'
+import { CostPerKmReportPanel } from '../components/CostPerKmReportPanel'
 import { CarEditModal } from '../components/CarEditModal'
 import { IconDelete, IconEdit, IconRow } from '../components/IconButtons'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
@@ -189,7 +191,16 @@ export function CarDetailsPage() {
   const navigate = useNavigate()
   const [car, setCar] = useState<CarDto | null>(null)
   const [entries, setEntries] = useState<ExpenseEntryDto[] | null>(null)
+  const [fuelings, setFuelings] = useState<FuelingEntryDto[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const recentFuelingsSorted = useMemo(() => {
+    if (!fuelings) return []
+    return [...fuelings].sort((a, b) => {
+      const d = String(b.performedAt).localeCompare(String(a.performedAt))
+      return d !== 0 ? d : b.kmAtFueling - a.kmAtFueling
+    })
+  }, [fuelings])
 
   const [linkedOpen, setLinkedOpen] = useState(false)
   const [registry, setRegistry] = useState<CarRegistryDto | null>(null)
@@ -216,15 +227,17 @@ export function CarDetailsPage() {
 
   const canSaveEntry = useMemo(() => title.trim().length > 0 && price >= 0 && kmAtService >= 0, [title, price, kmAtService])
 
-  async function refresh(id: string) {
+  async function refresh(id: string): Promise<CarDto> {
     setError(null)
     setRegistry(null)
     setRegistryError(null)
-    const [c, e] = await Promise.all([CarApi.getCar(id), CarApi.listEntries(id)])
+    const [c, e, rawFuelings] = await Promise.all([CarApi.getCar(id), CarApi.listEntries(id), CarApi.listFuelingsByCar(id)])
     setCar(c)
     setEntries(e)
+    setFuelings(rawFuelings)
     setCurrentKm(c.currentKm)
     if (!editingEntryIdRef.current) setKmAtService(c.currentKm)
+    return c
   }
 
   useEffect(() => {
@@ -264,14 +277,15 @@ export function CarDetailsPage() {
     setNotes(e.notes ?? '')
   }
 
-  function cancelEditEntry() {
+  function cancelEditEntry(kmFallback?: number) {
+    const km = kmFallback ?? car?.currentKm ?? 0
     setEditingEntryId(null)
     setTitle('')
     setPrice(0)
     setSupplierBrand('')
     setProductModel('')
     setPerformedAt(todayIsoDate())
-    setKmAtService(car?.currentKm ?? 0)
+    setKmAtService(km)
     setNotes('')
     setType('Service')
   }
@@ -294,6 +308,7 @@ export function CarDetailsPage() {
     if (!carId || !canSaveEntry) return
     setError(null)
     try {
+      const wasEditing = !!editingEntryId
       if (editingEntryId) {
         await CarApi.patchEntry(carId, editingEntryId, {
           type,
@@ -305,7 +320,6 @@ export function CarDetailsPage() {
           kmAtService,
           notes: notes.trim() ? notes.trim() : null,
         })
-        cancelEditEntry()
       } else {
         await CarApi.createEntry(carId, {
           type,
@@ -317,18 +331,19 @@ export function CarDetailsPage() {
           kmAtService,
           notes: notes.trim() ? notes.trim() : null,
         })
+      }
+      const c = await refresh(carId)
+      if (wasEditing) {
+        cancelEditEntry(c.currentKm)
+      } else {
         setTitle('')
         setPrice(0)
         setSupplierBrand('')
         setProductModel('')
         setPerformedAt(todayIsoDate())
-        setKmAtService(car?.currentKm ?? 0)
+        setKmAtService(c.currentKm)
         setNotes('')
       }
-      setEntries(await CarApi.listEntries(carId))
-      const c = await CarApi.getCar(carId)
-      setCar(c)
-      setRegistry(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
     }
@@ -340,9 +355,8 @@ export function CarDetailsPage() {
     setError(null)
     try {
       await CarApi.deleteEntry(carId, entry.id)
-      if (editingEntryId === entry.id) cancelEditEntry()
-      setEntries(await CarApi.listEntries(carId))
-      setRegistry(null)
+      const c = await refresh(carId)
+      if (editingEntryId === entry.id) cancelEditEntry(c.currentKm)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     }
@@ -399,6 +413,8 @@ export function CarDetailsPage() {
       </header>
 
       {error ? <p style={{ color: 'var(--danger)', marginTop: 12 }}>{error}</p> : null}
+
+      <CostPerKmReportPanel carId={carId} title={t('carDetails:costReportTitle')} />
 
       <section className="card">
         <button
@@ -560,9 +576,42 @@ export function CarDetailsPage() {
         <div style={{ padding: 16, border: '1px solid var(--border)', borderRadius: 12, background: 'var(--surface)' }}>
           <h2 style={{ marginTop: 0 }}>{t('carDetails:maintenanceCard.title')}</h2>
           <p style={{ margin: 0, opacity: 0.8 }}>{t('carDetails:maintenanceCard.subtitle')}</p>
-          <div style={{ marginTop: 10 }}>
+          <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
             <Link to={`/cars/${carId}/maintenance`}>{t('carDetails:maintenanceCard.open')}</Link>
+            <Link to={`/cars/${carId}/fuelings`}>{t('carDetails:maintenanceCard.openFuelings')}</Link>
           </div>
+        </div>
+      </section>
+
+      <section className="card" style={{ marginTop: 14 }}>
+        <h2 style={{ marginTop: 0 }}>{t('carDetails:fuelingsCard.title')}</h2>
+        {fuelings === null ? (
+          <p style={{ opacity: 0.85 }}>{t('common:status.loading')}</p>
+        ) : recentFuelingsSorted.length === 0 ? (
+          <p style={{ opacity: 0.85 }}>{t('carDetails:fuelingsCard.empty')}</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
+            {recentFuelingsSorted.slice(0, 5).map((f) => {
+              const liters = Number(f.liters)
+              const total = Number(f.totalPrice)
+              const pricePerLiter = liters > 0 ? total / liters : null
+              return (
+                <li key={f.id} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 10 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>
+                    {f.performedAt} · {f.kmAtFueling.toLocaleString()} km · {f.fuelType}
+                  </div>
+                  <div style={{ opacity: 0.85, fontSize: 13, marginTop: 4 }}>
+                    {liters.toLocaleString(undefined, { maximumFractionDigits: 2 })} L ·{' '}
+                    {total.toLocaleString(undefined, { style: 'currency', currency: 'BRL' })}
+                    {pricePerLiter != null ? ` · ${pricePerLiter.toLocaleString(undefined, { style: 'currency', currency: 'BRL' })}/L` : ''}
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+        <div style={{ marginTop: 12 }}>
+          <Link to={`/cars/${carId}/fuelings`}>{t('carDetails:fuelingsCard.viewAll')}</Link>
         </div>
       </section>
 
@@ -608,7 +657,7 @@ export function CarDetailsPage() {
 
           <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
             {editingEntryId ? (
-              <button type="button" onClick={cancelEditEntry}>
+              <button type="button" onClick={() => cancelEditEntry()}>
                 {t('carDetails:entryForm.cancelEdit')}
               </button>
             ) : null}

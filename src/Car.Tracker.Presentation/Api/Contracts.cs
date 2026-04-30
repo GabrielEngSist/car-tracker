@@ -121,7 +121,7 @@ public sealed record CreateFuelingEntryRequest(
     int KmAtFueling,
     decimal Liters,
     decimal TotalPrice,
-    string? FuelType,
+    FuelType? FuelType,
     string? StationName,
     string? Notes);
 
@@ -132,7 +132,7 @@ public sealed record FuelingEntryDto(
     int KmAtFueling,
     decimal Liters,
     decimal TotalPrice,
-    string? FuelType,
+    FuelType FuelType,
     string? StationName,
     string? Notes);
 
@@ -141,7 +141,7 @@ public sealed record UpdateFuelingEntryRequest(
     int? KmAtFueling,
     decimal? Liters,
     decimal? TotalPrice,
-    string? FuelType,
+    FuelType? FuelType,
     string? StationName,
     string? Notes);
 

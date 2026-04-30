@@ -17,8 +17,8 @@ public sealed class FuelingEntry : AuditableEntity
     /// <summary>Valor total pago.</summary>
     public decimal TotalPrice { get; set; }
 
-    /// <summary>Combustível (ex: Gasolina, Etanol, Diesel).</summary>
-    public string? FuelType { get; set; }
+    /// <summary>Combustível. Padrão <see cref="FuelType.Gasolina"/> quando não informado ao criar.</summary>
+    public FuelType FuelType { get; set; } = FuelType.Gasolina;
 
     public string? StationName { get; set; }
     public string? Notes { get; set; }

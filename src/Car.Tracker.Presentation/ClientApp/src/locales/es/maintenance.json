@@ -2,6 +2,9 @@
   "backToCar": "← Coche",
   "title": "Mantenimiento",
   "subtitle": "“Lo que ocurra primero” (km o tiempo).",
+  "costReport": {
+    "title": "Consumo × mantenimiento (coste medio)"
+  },
   "addItem": {
     "title": "Añadir ítem del plan",
     "titleLabel": "Título *",

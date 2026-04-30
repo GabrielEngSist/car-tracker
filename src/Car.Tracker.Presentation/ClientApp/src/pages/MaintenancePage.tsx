@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { CarApi, type MaintenancePlanItemDto, type MaintenanceStatusDto } from '../api'
+import { CostPerKmReportPanel } from '../components/CostPerKmReportPanel'
 import { IconDelete, IconEdit, IconRow, IconToggleActive } from '../components/IconButtons'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -97,6 +98,8 @@ export function MaintenancePage() {
       </header>
 
       {error ? <p style={{ color: 'var(--danger)', marginTop: 12 }}>{error}</p> : null}
+
+      <CostPerKmReportPanel carId={carId} title={t('maintenance:costReport.title')} />
 
       <section className="card">
         <h2 style={{ marginTop: 0 }}>{t('maintenance:addItem.title')}</h2>

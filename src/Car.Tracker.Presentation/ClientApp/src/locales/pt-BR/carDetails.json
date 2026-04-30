@@ -23,7 +23,14 @@
   "maintenanceCard": {
     "title": "Manutenção",
     "subtitle": "Lista de próximos vencimentos (km ou tempo, o que ocorrer primeiro).",
-    "open": "Abrir manutenção"
+    "open": "Abrir manutenção",
+    "openFuelings": "Abastecimentos"
+  },
+  "costReportTitle": "Consumo × manutenção (custo médio)",
+  "fuelingsCard": {
+    "title": "Abastecimentos recentes",
+    "viewAll": "Ver todos os abastecimentos",
+    "empty": "Nenhum abastecimento."
   },
   "entryForm": {
     "addTitle": "Adicionar serviço / peça",

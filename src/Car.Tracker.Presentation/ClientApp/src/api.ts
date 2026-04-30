@@ -142,6 +142,8 @@ export type MaintenanceStatusDto = {
   overdue: boolean
 }
 
+export type FuelTypeDto = 'Gasolina' | 'Alcool' | 'Diesel' | 'KV'
+
 export type FuelingEntryDto = {
   id: string
   carId: string
@@ -149,9 +151,38 @@ export type FuelingEntryDto = {
   kmAtFueling: number
   liters: number
   totalPrice: number
-  fuelType: string | null
+  fuelType: FuelTypeDto
   stationName: string | null
   notes: string | null
+}
+
+export type CostPerKmReportDto = {
+  carId: string
+  mode: string
+  periodVariant: string
+  distanceReferenceVariant: string
+  aggregatorLabel: string
+  windowStartInclusive: string
+  windowEndInclusive: string
+  maintenanceExpenseTotal: number
+  fuelExpenseTotal: number
+  grandTotalExpense: number
+  expenseEntryCountIncluded: number
+  fuelingEntryCountIncluded: number
+  minKmObservedInWindow: number | null
+  maxKmObservedInWindow: number | null
+  kmDelta: number | null
+  costPerKm: number | null
+  distanceReferenceKm: number | null
+  estimatedCostAtDistanceReference: number | null
+}
+
+export type CostReportQuery = {
+  basis: 'period' | 'lifetime'
+  /** Quando basis=period — total | 1d | 1m | 6m | 1y */
+  period: string
+  /** total | km1 | km10 | km100 | km1000 */
+  distanceRef: string
 }
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
@@ -200,6 +231,11 @@ export const CarApi = {
   ) => api<FuelingEntryDto>(`/api/cars/${carId}/fuelings/${fuelingId}`, { method: 'PATCH', body: JSON.stringify(body) }),
   deleteFueling: (carId: string, fuelingId: string) =>
     api<void>(`/api/cars/${carId}/fuelings/${fuelingId}`, { method: 'DELETE' }),
+
+  getCostPerKmReport: (carId: string, query: CostReportQuery) =>
+    api<CostPerKmReportDto>(
+      `/api/cars/${encodeURIComponent(carId)}/reports/cost-per-km?basis=${encodeURIComponent(query.basis)}&period=${encodeURIComponent(query.period)}&distanceRef=${encodeURIComponent(query.distanceRef)}`,
+    ),
 
   listEntries: (carId: string) => api<ExpenseEntryDto[]>(`/api/cars/${carId}/entries`),
   createEntry: (carId: string, body: Omit<ExpenseEntryDto, 'id' | 'carId'>) =>

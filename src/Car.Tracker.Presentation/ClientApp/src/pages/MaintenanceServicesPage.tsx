@@ -42,6 +42,7 @@ export function MaintenanceServicesPage() {
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <Link to={`/cars/${c.id}`}>Serviços / despesas</Link>
                     <Link to={`/cars/${c.id}/maintenance`}>Manutenção</Link>
+                    <Link to={`/cars/${c.id}/fuelings`}>Abastecimentos</Link>
                   </div>
                 </div>
               </li>

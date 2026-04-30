@@ -23,7 +23,14 @@
   "maintenanceCard": {
     "title": "Manutenzione",
     "subtitle": "Lista dei prossimi interventi (km o tempo, quello che viene prima).",
-    "open": "Apri manutenzione"
+    "open": "Apri manutenzione",
+    "openFuelings": "Rifornimenti"
+  },
+  "costReportTitle": "Consumo × manutenzione (costo medio)",
+  "fuelingsCard": {
+    "title": "Rifornimenti recenti",
+    "viewAll": "Vedi tutti i rifornimenti",
+    "empty": "Nessun rifornimento."
   },
   "entryForm": {
     "addTitle": "Aggiungi servizio / pezzo",

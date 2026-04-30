@@ -23,7 +23,14 @@
   "maintenanceCard": {
     "title": "Maintenance",
     "subtitle": "Next-due list (km or time, whichever comes first).",
-    "open": "Open maintenance"
+    "open": "Open maintenance",
+    "openFuelings": "Fuelings"
+  },
+  "costReportTitle": "Fuel × maintenance (average cost)",
+  "fuelingsCard": {
+    "title": "Recent fuelings",
+    "viewAll": "View all fuelings",
+    "empty": "No fuelings yet."
   },
   "entryForm": {
     "addTitle": "Add service / part",

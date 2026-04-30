@@ -2,6 +2,9 @@
   "backToCar": "← Voiture",
   "title": "Maintenance",
   "subtitle": "« Le premier atteint » (km ou temps).",
+  "costReport": {
+    "title": "Consommation × entretien (coût moyen)"
+  },
   "addItem": {
     "title": "Ajouter un élément au plan",
     "titleLabel": "Titre *",

@@ -280,6 +280,46 @@ cars.MapGet("/{carId:guid}/fuelings", async (Guid carId, AppDbContext db) =>
     return Results.Ok(items);
 });
 
+cars.MapGet("/{carId:guid}/reports/cost-per-km", async (
+    Guid carId,
+    string? basis,
+    string? period,
+    string? distanceRef,
+    AppDbContext db) =>
+{
+    var car = await db.Cars.AsNoTracking().FirstOrDefaultAsync(c => c.Id == carId);
+    if (car is null) return Results.NotFound();
+
+    if (!CostPerKmReportQuery.ParseBasis(basis, out var lifetimeMode))
+        return Results.BadRequest("basis must be 'period' or 'lifetime'.");
+
+    if (!CostPerKmReportQuery.TryParseDistanceRef(distanceRef, out var dMult))
+        return Results.BadRequest("distanceRef invalid. Use total, km1, km10, km100, km1000 (or 1,10,100,1000).");
+
+    PeriodAggregator periodAgg = PeriodAggregator.Total;
+    if (!lifetimeMode)
+    {
+        if (!CostPerKmReportQuery.TryParsePeriod(period, out periodAgg))
+            return Results.BadRequest("period invalid. Use total, 1d, 1m, 6m, 1y.");
+    }
+
+    var expenses = await db.ExpenseEntries.AsNoTracking()
+        .Where(e => e.CarId == carId)
+        .ToListAsync();
+
+    var fuels = await db.FuelingEntries.AsNoTracking()
+        .Where(f => f.CarId == carId)
+        .ToListAsync();
+
+    var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+    var report = lifetimeMode
+        ? CostPerKmReportCalculator.ComputeByDistanceLifetime(carId, car, expenses, fuels, dMult, today)
+        : CostPerKmReportCalculator.ComputeByPeriod(carId, car, expenses, fuels, periodAgg, today, dMult);
+
+    return Results.Ok(report);
+});
+
 cars.MapPost("/{carId:guid}/fuelings", async (Guid carId, CreateFuelingEntryRequest request, AppDbContext db) =>
 {
     var car = await db.Cars.FindAsync(carId);
@@ -296,7 +336,7 @@ cars.MapPost("/{carId:guid}/fuelings", async (Guid carId, CreateFuelingEntryRequ
         KmAtFueling = request.KmAtFueling,
         Liters = request.Liters,
         TotalPrice = request.TotalPrice,
-        FuelType = string.IsNullOrWhiteSpace(request.FuelType) ? null : request.FuelType.Trim(),
+        FuelType = request.FuelType ?? FuelType.Gasolina,
         StationName = string.IsNullOrWhiteSpace(request.StationName) ? null : request.StationName.Trim(),
         Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim(),
     };
@@ -343,7 +383,7 @@ cars.MapPatch("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid
         entry.TotalPrice = request.TotalPrice.Value;
     }
     if (request.FuelType is not null)
-        entry.FuelType = string.IsNullOrWhiteSpace(request.FuelType) ? null : request.FuelType.Trim();
+        entry.FuelType = request.FuelType.Value;
     if (request.StationName is not null)
         entry.StationName = string.IsNullOrWhiteSpace(request.StationName) ? null : request.StationName.Trim();
     if (request.Notes is not null)

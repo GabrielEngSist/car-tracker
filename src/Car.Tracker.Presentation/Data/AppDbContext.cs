@@ -175,7 +175,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         {
             b.HasKey(x => x.Id);
             b.HasIndex(x => new { x.CarId, x.PerformedAt });
-            b.Property(x => x.FuelType).HasMaxLength(64);
+            b.Property(x => x.FuelType).HasConversion<string>().HasMaxLength(32);
             b.Property(x => x.StationName).HasMaxLength(200);
             b.Property(x => x.Notes).HasMaxLength(2000);
 

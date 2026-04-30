@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CarApi, type CarDto } from '../api'
+import { CarApi, type CarDto, type FuelTypeDto } from '../api'
 import { useTranslation } from 'react-i18next'
 
 function todayIsoDate(): string {
@@ -14,9 +14,13 @@ type Props = {
   open: boolean
   onClose: () => void
   onCreated: () => Promise<void> | void
+  /** Quando informado, o abastecimento é sempre deste carro (ex.: página do veículo). */
+  prefilledCarId?: string
 }
 
-export function FuelingCreateModal({ open, onClose, onCreated }: Props) {
+const FUEL_OPTIONS: FuelTypeDto[] = ['Gasolina', 'Alcool', 'Diesel', 'KV']
+
+export function FuelingCreateModal({ open, onClose, onCreated, prefilledCarId }: Props) {
   const { t } = useTranslation(['common'])
   const [cars, setCars] = useState<CarDto[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -27,7 +31,7 @@ export function FuelingCreateModal({ open, onClose, onCreated }: Props) {
   const [kmAtFueling, setKmAtFueling] = useState<number>(0)
   const [liters, setLiters] = useState<number>(0)
   const [totalPrice, setTotalPrice] = useState<number>(0)
-  const [fuelType, setFuelType] = useState('')
+  const [fuelType, setFuelType] = useState<FuelTypeDto>('Gasolina')
   const [stationName, setStationName] = useState('')
   const [notes, setNotes] = useState('')
 
@@ -35,13 +39,21 @@ export function FuelingCreateModal({ open, onClose, onCreated }: Props) {
     if (!open) return
     setError(null)
     setCars(null)
+
+    if (prefilledCarId) {
+      setCarId(prefilledCarId)
+    } else {
+      setCarId('')
+    }
+
     void CarApi.listCars()
       .then((list) => {
         setCars(list)
-        if (!carId && list.length > 0) setCarId(list[0].id)
+        if (prefilledCarId) return
+        if (list.length > 0) setCarId((current) => (current ? current : list[0].id))
       })
       .catch((e) => setError(e instanceof Error ? e.message : String(e)))
-  }, [open])
+  }, [open, prefilledCarId])
 
   const canSave = useMemo(() => carId && kmAtFueling >= 0 && liters > 0 && totalPrice >= 0 && !!performedAt, [carId, kmAtFueling, liters, totalPrice, performedAt])
 
@@ -58,7 +70,7 @@ export function FuelingCreateModal({ open, onClose, onCreated }: Props) {
         kmAtFueling,
         liters,
         totalPrice,
-        fuelType: fuelType.trim() ? fuelType.trim() : null,
+        fuelType,
         stationName: stationName.trim() ? stationName.trim() : null,
         notes: notes.trim() ? notes.trim() : null,
       })
@@ -81,16 +93,18 @@ export function FuelingCreateModal({ open, onClose, onCreated }: Props) {
         <h3 id="fueling-create-title">Adicionar abastecimento</h3>
 
         <form onSubmit={onSubmit} className="gridForm" style={{ marginTop: 12 }}>
-          <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Carro</div>
-            <select value={carId} onChange={(e) => setCarId(e.target.value)} disabled={cars === null || cars.length === 0}>
-              {cars?.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {(c.name ? `${c.name} · ` : '') + c.model}
-                </option>
-              ))}
-            </select>
-          </label>
+          {!prefilledCarId ? (
+            <label>
+              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Carro</div>
+              <select value={carId} onChange={(e) => setCarId(e.target.value)} disabled={cars === null || cars.length === 0}>
+                {cars?.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {(c.name ? `${c.name} · ` : '') + c.model}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
 
           <label>
             <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Data</div>
@@ -113,8 +127,14 @@ export function FuelingCreateModal({ open, onClose, onCreated }: Props) {
           </label>
 
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Combustível (opcional)</div>
-            <input value={fuelType} onChange={(e) => setFuelType(e.target.value)} placeholder="Gasolina" />
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Combustível</div>
+            <select value={fuelType} onChange={(e) => setFuelType(e.target.value as FuelTypeDto)}>
+              {FUEL_OPTIONS.map((f) => (
+                <option key={f} value={f}>
+                  {f}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label>
