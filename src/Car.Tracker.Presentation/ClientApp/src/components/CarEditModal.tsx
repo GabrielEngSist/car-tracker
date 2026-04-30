@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CarDto } from '../api'
 import { ehPlacaValida, normalizarPlaca } from '../placaBrasil'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   open: boolean
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export function CarEditModal({ open, car, onClose, onSave }: Props) {
+  const { t } = useTranslation(['common', 'modals'])
   const [name, setName] = useState('')
   const [model, setModel] = useState('')
   const [year, setYear] = useState(2000)
@@ -26,7 +28,7 @@ export function CarEditModal({ open, car, onClose, onSave }: Props) {
   const placaNorm = useMemo(() => normalizarPlaca(placa), [placa])
   const placaErro = useMemo(() => {
     if (!placaNorm) return null
-    return ehPlacaValida(placaNorm) ? null : 'Placa inválida.'
+    return ehPlacaValida(placaNorm) ? null : t('modals:carEdit.plateInvalid')
   }, [placaNorm])
 
   useEffect(() => {
@@ -50,7 +52,7 @@ export function CarEditModal({ open, car, onClose, onSave }: Props) {
         year,
         currentKm,
         name: name.trim() ? name.trim() : null,
-        placa: placaNorm ? placaNorm : '',
+        placa: placaNorm ? placaNorm : null,
       })
       onClose()
     } finally {
@@ -61,37 +63,37 @@ export function CarEditModal({ open, car, onClose, onSave }: Props) {
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
       <div className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="car-edit-title" onMouseDown={(e) => e.stopPropagation()}>
-        <h3 id="car-edit-title">Edit car</h3>
+        <h3 id="car-edit-title">{t('modals:carEdit.title')}</h3>
         <form onSubmit={onSubmit} style={{ display: 'grid', gap: 12 }}>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Nickname (optional)</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('modals:carEdit.nicknameLabel')}</div>
             <input value={name} onChange={(e) => setName(e.target.value)} />
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Model *</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('modals:carEdit.modelLabel')}</div>
             <input value={model} onChange={(e) => setModel(e.target.value)} required />
           </label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <label>
-              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Year</div>
+              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('modals:carEdit.yearLabel')}</div>
               <input type="number" min={1900} max={3000} value={year} onChange={(e) => setYear(Number(e.target.value))} />
             </label>
             <label>
-              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Current km</div>
+              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('modals:carEdit.currentKmLabel')}</div>
               <input type="number" min={0} value={currentKm} onChange={(e) => setCurrentKm(Number(e.target.value))} />
             </label>
           </div>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Placa (opcional)</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('modals:carEdit.plateLabel')}</div>
             <input value={placa} onChange={(e) => setPlaca(e.target.value)} placeholder="ABC1D23" spellCheck={false} />
             {placaErro ? <div style={{ color: 'salmon', fontSize: 12, marginTop: 6 }}>{placaErro}</div> : null}
           </label>
           <div className="modal-actions">
             <button type="button" onClick={onClose}>
-              Cancel
+              {t('common:actions.cancel')}
             </button>
             <button type="submit" disabled={saving || !!placaErro}>
-              Save
+              {t('common:actions.save')}
             </button>
           </div>
         </form>

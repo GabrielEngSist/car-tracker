@@ -1,0 +1,34 @@
+{
+  "backToCar": "← Car",
+  "title": "Maintenance",
+  "subtitle": "“Whichever comes first” (km or time).",
+  "addItem": {
+    "title": "Add maintenance plan item",
+    "titleLabel": "Title *",
+    "everyKmLabel": "Every (km)",
+    "everyDaysLabel": "Every (days)",
+    "everyDaysPlaceholder": "182 (≈ 6 months)",
+    "submit": "Add plan item"
+  },
+  "nextDue": {
+    "title": "Next due",
+    "empty": "No plan items yet."
+  },
+  "planItems": {
+    "title": "Plan items",
+    "everyKm": "Every {{km}} km",
+    "everyDays": "Every {{days}} days",
+    "noKmRule": "No km rule",
+    "noTimeRule": "No time rule",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "status": {
+    "overdue": "OVERDUE",
+    "ok": "OK",
+    "last": "Last: {{value}}",
+    "nextDate": "Next date: {{value}}",
+    "nextKm": "Next km: {{value}}"
+  },
+  "confirmDeletePlan": "Delete plan “{{title}}”?"
+}

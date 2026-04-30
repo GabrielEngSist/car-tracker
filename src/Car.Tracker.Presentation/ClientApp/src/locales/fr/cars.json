@@ -1,0 +1,28 @@
+{
+  "subtitle": "Voitures, dépenses et maintenance à venir.",
+  "addCar": {
+    "title": "Ajouter une voiture",
+    "nicknameLabel": "Surnom (optionnel)",
+    "nicknamePlaceholder": "Ma Civic",
+    "modelLabel": "Modèle *",
+    "modelPlaceholder": "Honda Civic",
+    "yearLabel": "Année",
+    "currentKmLabel": "Km actuels",
+    "plateLabel": "Plaque (optionnel)",
+    "platePlaceholder": "ABC1D23 ou ABC-1234",
+    "plateInvalid": "Plaque invalide (utilisez l'ancien format brésilien ABC1234 ou Mercosul, ex. ABC1D23).",
+    "autoHelp": "L'enregistrement automatique consulte la plaque et la FIPE (coût API) et remplit modèle/année.",
+    "autoButtonIdle": "Enregistrer automatiquement",
+    "autoButtonLoading": "Consultation…",
+    "createButton": "Créer la voiture"
+  },
+  "list": {
+    "title": "Vos voitures",
+    "empty": "Aucune voiture pour le moment."
+  },
+  "confirmDelete": "Supprimer {{nameAndModel}} ? Cela supprime toutes les entrées et plans.",
+  "openCar": "Ouvrir la voiture",
+  "editCar": "Modifier la voiture",
+  "deleteCar": "Supprimer la voiture",
+  "platePrefix": "Plaque"
+}

@@ -1,0 +1,57 @@
+{
+  "backToCars": "← Cars",
+  "additionalInfo": {
+    "title": "Additional vehicle info",
+    "subtitle": "Persisted lookups (plate / FIPE), entries, and maintenance plan items linked to this car.",
+    "appTitle": "App record",
+    "plateTitle": "Plate lookup (API)",
+    "plateEmpty": "No plate lookup saved for this vehicle.",
+    "fipeTitle": "FIPE price lookup (API)",
+    "fipeEmpty": "No FIPE lookup saved for this vehicle.",
+    "entriesTitle": "Entries (expenses / services)",
+    "entriesEmpty": "No entries.",
+    "planTitle": "Maintenance plan",
+    "planEmptyPrefix": "No plan items.",
+    "openMaintenance": "Open maintenance",
+    "manageMaintenance": "Manage maintenance"
+  },
+  "odometer": {
+    "title": "Update odometer",
+    "currentKmLabel": "Current km",
+    "save": "Save"
+  },
+  "maintenanceCard": {
+    "title": "Maintenance",
+    "subtitle": "Next-due list (km or time, whichever comes first).",
+    "open": "Open maintenance"
+  },
+  "entryForm": {
+    "addTitle": "Add service / part",
+    "editTitle": "Edit service / part",
+    "typeLabel": "Type",
+    "typeService": "Service",
+    "typePart": "Part",
+    "titleLabel": "Title *",
+    "priceLabel": "Price",
+    "dateLabel": "Date",
+    "supplierBrandLabel": "Supplier brand",
+    "productModelLabel": "Product model",
+    "kmAtServiceLabel": "Km at service",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Optional",
+    "cancelEdit": "Cancel edit",
+    "saveChanges": "Save changes",
+    "addEntry": "Add entry"
+  },
+  "history": {
+    "title": "History",
+    "empty": "No entries yet."
+  },
+  "confirm": {
+    "deleteEntry": "Delete “{{title}}”?",
+    "deleteCar": "Delete this car and all data?"
+  },
+  "labels": {
+    "plate": "Plate"
+  }
+}

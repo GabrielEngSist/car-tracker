@@ -12,6 +12,8 @@ import {
 } from '../api'
 import { CarEditModal } from '../components/CarEditModal'
 import { IconDelete, IconEdit, IconRow } from '../components/IconButtons'
+import { LanguageSwitcher } from '../components/LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
 
 function todayIsoDate(): string {
   const d = new Date()
@@ -181,6 +183,7 @@ function ConsultaFipeBlock({ f }: { f: ConsultaPrecoFipeDto }) {
 }
 
 export function CarDetailsPage() {
+  const { t } = useTranslation(['common', 'carDetails'])
   const { carId } = useParams()
   const navigate = useNavigate()
   const [car, setCar] = useState<CarDto | null>(null)
@@ -332,7 +335,7 @@ export function CarDetailsPage() {
 
   async function onDeleteEntry(entry: ExpenseEntryDto) {
     if (!carId) return
-    if (!window.confirm(`Delete “${entry.title}”?`)) return
+    if (!window.confirm(t('carDetails:confirm.deleteEntry', { title: entry.title }))) return
     setError(null)
     try {
       await CarApi.deleteEntry(carId, entry.id)
@@ -346,7 +349,7 @@ export function CarDetailsPage() {
 
   async function onDeleteCar() {
     if (!carId || !car) return
-    if (!window.confirm(`Delete this car and all data?`)) return
+    if (!window.confirm(t('carDetails:confirm.deleteCar'))) return
     setError(null)
     try {
       await CarApi.deleteCar(carId)
@@ -363,7 +366,7 @@ export function CarDetailsPage() {
       <header style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
         <div>
           <div style={{ opacity: 0.8, fontSize: 13 }}>
-            <Link to="/">← Cars</Link>
+            <Link to="/">{t('carDetails:backToCars')}</Link>
           </div>
           <h1 style={{ margin: '8px 0 0' }}>
             {car ? (
@@ -376,15 +379,18 @@ export function CarDetailsPage() {
             )}
           </h1>
           {car?.placa ? (
-            <div style={{ marginTop: 6, opacity: 0.85, fontSize: 14 }}>Placa {car.placa}</div>
+            <div style={{ marginTop: 6, opacity: 0.85, fontSize: 14 }}>
+              {t('carDetails:labels.plate')} {car.placa}
+            </div>
           ) : null}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <LanguageSwitcher />
           {car ? <div style={{ opacity: 0.85 }}>{car.currentKm.toLocaleString()} km</div> : null}
           {car ? (
             <IconRow>
-              <IconEdit label="Edit car" onClick={() => setCarEditOpen(true)} />
-              <IconDelete label="Delete car" onClick={onDeleteCar} />
+              <IconEdit label={t('common:actions.edit')} onClick={() => setCarEditOpen(true)} />
+              <IconDelete label={t('common:actions.delete')} onClick={onDeleteCar} />
             </IconRow>
           ) : null}
         </div>
@@ -412,10 +418,10 @@ export function CarDetailsPage() {
           }}
         >
           <span style={{ fontSize: 12, opacity: 0.75, width: 18 }}>{linkedOpen ? '▼' : '▶'}</span>
-          <span style={{ fontWeight: 700, fontSize: 16 }}>Informações adicionais do veículo</span>
+          <span style={{ fontWeight: 700, fontSize: 16 }}>{t('carDetails:additionalInfo.title')}</span>
         </button>
         <p style={{ margin: '8px 0 0 28px', opacity: 0.75, fontSize: 13 }}>
-          Consultas persistidas (placa / FIPE), lançamentos e itens do plano de manutenção vinculados a este carro.
+          {t('carDetails:additionalInfo.subtitle')}
         </p>
         {linkedOpen ? (
           <div style={{ marginTop: 16, marginLeft: 0 }}>
@@ -424,7 +430,7 @@ export function CarDetailsPage() {
             {registry && !registryLoading ? (
               <div style={{ display: 'grid', gap: 20 }}>
                 <div>
-                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>Cadastro no app</h3>
+                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.appTitle')}</h3>
                   <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12 }}>
                     {infoRow('Modelo', registry.car.model, 'cad-m')}
                     {infoRow('Ano', registry.car.year, 'cad-y')}
@@ -437,32 +443,32 @@ export function CarDetailsPage() {
                 </div>
 
                 <div>
-                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>Consulta por placa (API)</h3>
+                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.plateTitle')}</h3>
                   <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12 }}>
                     {registry.consultaPlaca ? (
                       <ConsultaPlacaBlock c={registry.consultaPlaca} />
                     ) : (
-                      <p style={{ margin: 0, opacity: 0.8 }}>Nenhuma consulta por placa gravada para este veículo.</p>
+                      <p style={{ margin: 0, opacity: 0.8 }}>{t('carDetails:additionalInfo.plateEmpty')}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>Consulta preço FIPE (API)</h3>
+                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.fipeTitle')}</h3>
                   <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12 }}>
                     {registry.consultaPrecoFipe ? (
                       <ConsultaFipeBlock f={registry.consultaPrecoFipe} />
                     ) : (
-                      <p style={{ margin: 0, opacity: 0.8 }}>Nenhuma consulta FIPE gravada para este veículo.</p>
+                      <p style={{ margin: 0, opacity: 0.8 }}>{t('carDetails:additionalInfo.fipeEmpty')}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>Lançamentos (despesas / serviços)</h3>
+                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.entriesTitle')}</h3>
                   <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12, maxHeight: 320, overflow: 'auto' }}>
                     {registry.expenseEntries.length === 0 ? (
-                      <p style={{ margin: 0, opacity: 0.8 }}>Nenhum lançamento.</p>
+                      <p style={{ margin: 0, opacity: 0.8 }}>{t('carDetails:additionalInfo.entriesEmpty')}</p>
                     ) : (
                       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                         <thead>
@@ -493,12 +499,12 @@ export function CarDetailsPage() {
                 </div>
 
                 <div>
-                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>Plano de manutenção</h3>
+                  <h3 style={{ margin: '0 0 10px', fontSize: 15 }}>{t('carDetails:additionalInfo.planTitle')}</h3>
                   <div style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 12 }}>
                     {registry.maintenancePlanItems.length === 0 ? (
                       <p style={{ margin: 0, opacity: 0.8 }}>
-                        Nenhum item de plano.{' '}
-                        <Link to={`/cars/${carId}/maintenance`}>Abrir manutenção</Link>
+                        {t('carDetails:additionalInfo.planEmptyPrefix')}{' '}
+                        <Link to={`/cars/${carId}/maintenance`}>{t('carDetails:additionalInfo.openMaintenance')}</Link>
                       </p>
                     ) : (
                       <>
@@ -523,7 +529,7 @@ export function CarDetailsPage() {
                           </tbody>
                         </table>
                         <div style={{ marginTop: 10 }}>
-                          <Link to={`/cars/${carId}/maintenance`}>Gerir manutenção</Link>
+                          <Link to={`/cars/${carId}/maintenance`}>{t('carDetails:additionalInfo.manageMaintenance')}</Link>
                         </div>
                       </>
                     )}
@@ -537,86 +543,86 @@ export function CarDetailsPage() {
 
       <section style={{ marginTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div style={{ padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Update odometer</h2>
+          <h2 style={{ marginTop: 0 }}>{t('carDetails:odometer.title')}</h2>
           <form onSubmit={onUpdateKm} style={{ display: 'flex', gap: 10, alignItems: 'end' }}>
             <label style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Current km</div>
+              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:odometer.currentKmLabel')}</div>
               <input type="number" min={0} value={currentKm} onChange={(e) => setCurrentKm(Number(e.target.value))} />
             </label>
             <button type="submit" disabled={!car}>
-              Save
+              {t('carDetails:odometer.save')}
             </button>
           </form>
         </div>
 
         <div style={{ padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
-          <h2 style={{ marginTop: 0 }}>Maintenance</h2>
-          <p style={{ margin: 0, opacity: 0.8 }}>Next-due list (km or time, whichever comes first).</p>
+          <h2 style={{ marginTop: 0 }}>{t('carDetails:maintenanceCard.title')}</h2>
+          <p style={{ margin: 0, opacity: 0.8 }}>{t('carDetails:maintenanceCard.subtitle')}</p>
           <div style={{ marginTop: 10 }}>
-            <Link to={`/cars/${carId}/maintenance`}>Open maintenance</Link>
+            <Link to={`/cars/${carId}/maintenance`}>{t('carDetails:maintenanceCard.open')}</Link>
           </div>
         </div>
       </section>
 
       <section style={{ marginTop: 18, padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
-        <h2 style={{ marginTop: 0 }}>{editingEntryId ? 'Edit service / part' : 'Add service / part'}</h2>
+        <h2 style={{ marginTop: 0 }}>{editingEntryId ? t('carDetails:entryForm.editTitle') : t('carDetails:entryForm.addTitle')}</h2>
         <form onSubmit={onSaveEntry} style={{ display: 'grid', gridTemplateColumns: '160px 1fr 160px 160px', gap: 12 }}>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Type</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.typeLabel')}</div>
             <select value={type} onChange={(e) => setType(e.target.value as ExpenseEntryType)}>
-              <option value="Service">Service</option>
-              <option value="Part">Part</option>
+              <option value="Service">{t('carDetails:entryForm.typeService')}</option>
+              <option value="Part">{t('carDetails:entryForm.typePart')}</option>
             </select>
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Title *</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.titleLabel')}</div>
             <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Oil change" required />
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Price</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.priceLabel')}</div>
             <input type="number" min={0} step="0.01" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Date</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.dateLabel')}</div>
             <input type="date" value={performedAt} onChange={(e) => setPerformedAt(e.target.value)} />
           </label>
 
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Supplier brand</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.supplierBrandLabel')}</div>
             <input value={supplierBrand} onChange={(e) => setSupplierBrand(e.target.value)} placeholder="Bosch" />
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Product model</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.productModelLabel')}</div>
             <input value={productModel} onChange={(e) => setProductModel(e.target.value)} placeholder="5W-30" />
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Km at service</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.kmAtServiceLabel')}</div>
             <input type="number" min={0} value={kmAtService} onChange={(e) => setKmAtService(Number(e.target.value))} />
           </label>
           <label style={{ gridColumn: '1 / -1' }}>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Notes</div>
-            <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Optional" />
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('carDetails:entryForm.notesLabel')}</div>
+            <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t('carDetails:entryForm.notesPlaceholder')} />
           </label>
 
           <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
             {editingEntryId ? (
               <button type="button" onClick={cancelEditEntry}>
-                Cancel edit
+                {t('carDetails:entryForm.cancelEdit')}
               </button>
             ) : null}
             <button type="submit" disabled={!canSaveEntry}>
-              {editingEntryId ? 'Save changes' : 'Add entry'}
+              {editingEntryId ? t('carDetails:entryForm.saveChanges') : t('carDetails:entryForm.addEntry')}
             </button>
           </div>
         </form>
       </section>
 
       <section style={{ marginTop: 18 }}>
-        <h2 style={{ marginTop: 0 }}>History</h2>
+        <h2 style={{ marginTop: 0 }}>{t('carDetails:history.title')}</h2>
         {entries === null ? (
-          <p>Loading…</p>
+          <p>{t('common:status.loading')}</p>
         ) : entries.length === 0 ? (
-          <p>No entries yet.</p>
+          <p>{t('carDetails:history.empty')}</p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 10 }}>
             {entries.map((e) => (

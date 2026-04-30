@@ -1,0 +1,34 @@
+{
+  "backToCar": "← Coche",
+  "title": "Mantenimiento",
+  "subtitle": "“Lo que ocurra primero” (km o tiempo).",
+  "addItem": {
+    "title": "Añadir ítem del plan",
+    "titleLabel": "Título *",
+    "everyKmLabel": "Cada (km)",
+    "everyDaysLabel": "Cada (días)",
+    "everyDaysPlaceholder": "182 (≈ 6 meses)",
+    "submit": "Añadir ítem"
+  },
+  "nextDue": {
+    "title": "Próximos vencimientos",
+    "empty": "Aún no hay ítems de plan."
+  },
+  "planItems": {
+    "title": "Ítems del plan",
+    "everyKm": "Cada {{km}} km",
+    "everyDays": "Cada {{days}} días",
+    "noKmRule": "Sin regla por km",
+    "noTimeRule": "Sin regla por tiempo",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "status": {
+    "overdue": "VENCIDO",
+    "ok": "OK",
+    "last": "Último: {{value}}",
+    "nextDate": "Próxima fecha: {{value}}",
+    "nextKm": "Próximo km: {{value}}"
+  },
+  "confirmDeletePlan": "¿Eliminar plan “{{title}}”?"
+}

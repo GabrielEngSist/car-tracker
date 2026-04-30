@@ -1,0 +1,28 @@
+{
+  "subtitle": "Carros, despesas e manutenção a vencer.",
+  "addCar": {
+    "title": "Adicionar carro",
+    "nicknameLabel": "Apelido (opcional)",
+    "nicknamePlaceholder": "Meu Civic",
+    "modelLabel": "Modelo *",
+    "modelPlaceholder": "Honda Civic",
+    "yearLabel": "Ano",
+    "currentKmLabel": "Km atual",
+    "plateLabel": "Placa (opcional)",
+    "platePlaceholder": "ABC1D23 ou ABC-1234",
+    "plateInvalid": "Placa inválida (use formato antigo ABC1234 ou Mercosul, ex. ABC1D23).",
+    "autoHelp": "Cadastro automático consulta placa e FIPE (custo de API) e preenche modelo e ano.",
+    "autoButtonIdle": "Cadastrar automaticamente",
+    "autoButtonLoading": "Consultando…",
+    "createButton": "Criar carro"
+  },
+  "list": {
+    "title": "Seus carros",
+    "empty": "Nenhum carro ainda."
+  },
+  "confirmDelete": "Excluir {{nameAndModel}}? Isso remove todos os lançamentos e planos.",
+  "openCar": "Abrir carro",
+  "editCar": "Editar carro",
+  "deleteCar": "Excluir carro",
+  "platePrefix": "Placa"
+}

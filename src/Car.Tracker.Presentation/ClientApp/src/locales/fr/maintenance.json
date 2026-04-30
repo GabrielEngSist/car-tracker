@@ -1,0 +1,34 @@
+{
+  "backToCar": "← Voiture",
+  "title": "Maintenance",
+  "subtitle": "« Le premier atteint » (km ou temps).",
+  "addItem": {
+    "title": "Ajouter un élément au plan",
+    "titleLabel": "Titre *",
+    "everyKmLabel": "Tous les (km)",
+    "everyDaysLabel": "Tous les (jours)",
+    "everyDaysPlaceholder": "182 (≈ 6 mois)",
+    "submit": "Ajouter l'élément"
+  },
+  "nextDue": {
+    "title": "Prochaines échéances",
+    "empty": "Aucun élément de plan pour le moment."
+  },
+  "planItems": {
+    "title": "Éléments du plan",
+    "everyKm": "Tous les {{km}} km",
+    "everyDays": "Tous les {{days}} jours",
+    "noKmRule": "Aucune règle km",
+    "noTimeRule": "Aucune règle temps",
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "status": {
+    "overdue": "EN RETARD",
+    "ok": "OK",
+    "last": "Dernier : {{value}}",
+    "nextDate": "Prochaine date : {{value}}",
+    "nextKm": "Prochain km : {{value}}"
+  },
+  "confirmDeletePlan": "Supprimer le plan « {{title}} » ?"
+}

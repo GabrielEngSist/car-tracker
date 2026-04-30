@@ -1,0 +1,18 @@
+{
+  "carEdit": {
+    "title": "Editar coche",
+    "nicknameLabel": "Apodo (opcional)",
+    "modelLabel": "Modelo *",
+    "yearLabel": "Año",
+    "currentKmLabel": "Km actuales",
+    "plateLabel": "Matrícula (opcional)",
+    "plateInvalid": "Matrícula inválida."
+  },
+  "planEdit": {
+    "title": "Editar plan de mantenimiento",
+    "titleLabel": "Título *",
+    "everyKmLabel": "Cada (km)",
+    "everyDaysLabel": "Cada (días)",
+    "active": "Activo"
+  }
+}

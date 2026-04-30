@@ -1,0 +1,18 @@
+{
+  "carEdit": {
+    "title": "Modifica auto",
+    "nicknameLabel": "Soprannome (opzionale)",
+    "modelLabel": "Modello *",
+    "yearLabel": "Anno",
+    "currentKmLabel": "Km attuali",
+    "plateLabel": "Targa (opzionale)",
+    "plateInvalid": "Targa non valida."
+  },
+  "planEdit": {
+    "title": "Modifica piano di manutenzione",
+    "titleLabel": "Titolo *",
+    "everyKmLabel": "Ogni (km)",
+    "everyDaysLabel": "Ogni (giorni)",
+    "active": "Attivo"
+  }
+}

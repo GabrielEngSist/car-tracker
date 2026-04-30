@@ -1,0 +1,28 @@
+{
+  "subtitle": "Coches, gastos y mantenimiento próximo.",
+  "addCar": {
+    "title": "Añadir un coche",
+    "nicknameLabel": "Apodo (opcional)",
+    "nicknamePlaceholder": "Mi Civic",
+    "modelLabel": "Modelo *",
+    "modelPlaceholder": "Honda Civic",
+    "yearLabel": "Año",
+    "currentKmLabel": "Km actuales",
+    "plateLabel": "Matrícula (opcional)",
+    "platePlaceholder": "ABC1D23 o ABC-1234",
+    "plateInvalid": "Matrícula inválida (usa el formato brasileño antiguo ABC1234 o Mercosul, p. ej. ABC1D23).",
+    "autoHelp": "El registro automático consulta placa y FIPE (coste de API) y completa modelo/año.",
+    "autoButtonIdle": "Registrar automáticamente",
+    "autoButtonLoading": "Consultando…",
+    "createButton": "Crear coche"
+  },
+  "list": {
+    "title": "Tus coches",
+    "empty": "Aún no hay coches."
+  },
+  "confirmDelete": "¿Eliminar {{nameAndModel}}? Esto borra todos los registros y planes.",
+  "openCar": "Abrir coche",
+  "editCar": "Editar coche",
+  "deleteCar": "Eliminar coche",
+  "platePrefix": "Placa"
+}

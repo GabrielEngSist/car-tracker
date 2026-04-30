@@ -1,0 +1,57 @@
+{
+  "backToCars": "← Voitures",
+  "additionalInfo": {
+    "title": "Informations supplémentaires du véhicule",
+    "subtitle": "Consultations enregistrées (plaque / FIPE), entrées et éléments du plan de maintenance liés à cette voiture.",
+    "appTitle": "Enregistrement dans l'app",
+    "plateTitle": "Recherche par plaque (API)",
+    "plateEmpty": "Aucune recherche par plaque enregistrée pour ce véhicule.",
+    "fipeTitle": "Recherche prix FIPE (API)",
+    "fipeEmpty": "Aucune recherche FIPE enregistrée pour ce véhicule.",
+    "entriesTitle": "Entrées (dépenses / services)",
+    "entriesEmpty": "Aucune entrée.",
+    "planTitle": "Plan de maintenance",
+    "planEmptyPrefix": "Aucun élément de plan.",
+    "openMaintenance": "Ouvrir la maintenance",
+    "manageMaintenance": "Gérer la maintenance"
+  },
+  "odometer": {
+    "title": "Mettre à jour l'odomètre",
+    "currentKmLabel": "Km actuels",
+    "save": "Enregistrer"
+  },
+  "maintenanceCard": {
+    "title": "Maintenance",
+    "subtitle": "Liste des prochaines échéances (km ou temps, selon le premier atteint).",
+    "open": "Ouvrir la maintenance"
+  },
+  "entryForm": {
+    "addTitle": "Ajouter service / pièce",
+    "editTitle": "Modifier service / pièce",
+    "typeLabel": "Type",
+    "typeService": "Service",
+    "typePart": "Pièce",
+    "titleLabel": "Titre *",
+    "priceLabel": "Prix",
+    "dateLabel": "Date",
+    "supplierBrandLabel": "Marque/fournisseur",
+    "productModelLabel": "Produit/modèle",
+    "kmAtServiceLabel": "Km au service",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Optionnel",
+    "cancelEdit": "Annuler la modification",
+    "saveChanges": "Enregistrer les modifications",
+    "addEntry": "Ajouter une entrée"
+  },
+  "history": {
+    "title": "Historique",
+    "empty": "Aucune entrée pour le moment."
+  },
+  "confirm": {
+    "deleteEntry": "Supprimer “{{title}}” ?",
+    "deleteCar": "Supprimer cette voiture et toutes les données ?"
+  },
+  "labels": {
+    "plate": "Plaque"
+  }
+}

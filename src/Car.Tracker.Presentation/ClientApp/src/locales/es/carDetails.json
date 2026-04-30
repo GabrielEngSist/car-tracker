@@ -1,0 +1,57 @@
+{
+  "backToCars": "← Coches",
+  "additionalInfo": {
+    "title": "Información adicional del vehículo",
+    "subtitle": "Consultas guardadas (placa / FIPE), registros e ítems del plan de mantenimiento vinculados a este coche.",
+    "appTitle": "Registro en la app",
+    "plateTitle": "Consulta por placa (API)",
+    "plateEmpty": "No hay consulta por placa guardada para este vehículo.",
+    "fipeTitle": "Consulta precio FIPE (API)",
+    "fipeEmpty": "No hay consulta FIPE guardada para este vehículo.",
+    "entriesTitle": "Registros (gastos / servicios)",
+    "entriesEmpty": "Sin registros.",
+    "planTitle": "Plan de mantenimiento",
+    "planEmptyPrefix": "Sin ítems de plan.",
+    "openMaintenance": "Abrir mantenimiento",
+    "manageMaintenance": "Gestionar mantenimiento"
+  },
+  "odometer": {
+    "title": "Actualizar odómetro",
+    "currentKmLabel": "Km actuales",
+    "save": "Guardar"
+  },
+  "maintenanceCard": {
+    "title": "Mantenimiento",
+    "subtitle": "Lista de próximos vencimientos (km o tiempo, lo que ocurra primero).",
+    "open": "Abrir mantenimiento"
+  },
+  "entryForm": {
+    "addTitle": "Añadir servicio / pieza",
+    "editTitle": "Editar servicio / pieza",
+    "typeLabel": "Tipo",
+    "typeService": "Servicio",
+    "typePart": "Pieza",
+    "titleLabel": "Título *",
+    "priceLabel": "Precio",
+    "dateLabel": "Fecha",
+    "supplierBrandLabel": "Marca/proveedor",
+    "productModelLabel": "Producto/modelo",
+    "kmAtServiceLabel": "Km en el servicio",
+    "notesLabel": "Notas",
+    "notesPlaceholder": "Opcional",
+    "cancelEdit": "Cancelar edición",
+    "saveChanges": "Guardar cambios",
+    "addEntry": "Añadir registro"
+  },
+  "history": {
+    "title": "Historial",
+    "empty": "Aún no hay registros."
+  },
+  "confirm": {
+    "deleteEntry": "¿Eliminar “{{title}}”?",
+    "deleteCar": "¿Eliminar este coche y todos los datos?"
+  },
+  "labels": {
+    "plate": "Placa"
+  }
+}

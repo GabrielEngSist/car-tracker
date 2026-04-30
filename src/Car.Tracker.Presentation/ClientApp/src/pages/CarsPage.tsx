@@ -2,9 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { CarApi, type CarDto } from '../api'
 import { CarEditModal } from '../components/CarEditModal'
 import { IconDelete, IconEdit, IconOpen, IconRow } from '../components/IconButtons'
+import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ehPlacaValida, normalizarPlaca } from '../placaBrasil'
+import { useTranslation } from 'react-i18next'
 
 export function CarsPage() {
+  const { t } = useTranslation(['common', 'cars'])
   const [cars, setCars] = useState<CarDto[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -20,7 +23,7 @@ export function CarsPage() {
   const placaNorm = useMemo(() => normalizarPlaca(placa), [placa])
   const placaErro = useMemo(() => {
     if (!placaNorm) return null
-    return ehPlacaValida(placaNorm) ? null : 'Placa inválida (use formato antigo ABC1234 ou Mercosul, ex. ABC1D23).'
+    return ehPlacaValida(placaNorm) ? null : t('cars:addCar.plateInvalid')
   }, [placaNorm])
 
   const canCreate = useMemo(
@@ -92,7 +95,8 @@ export function CarsPage() {
   }
 
   async function onDeleteCar(c: CarDto) {
-    if (!window.confirm(`Delete ${c.name ? `${c.name} · ` : ''}${c.model}? This removes all services and plans.`)) return
+    const nameAndModel = `${c.name ? `${c.name} · ` : ''}${c.model}`
+    if (!window.confirm(t('cars:confirmDelete', { nameAndModel }))) return
     setError(null)
     try {
       await CarApi.deleteCar(c.id)
@@ -106,52 +110,53 @@ export function CarsPage() {
     <div style={{ maxWidth: 980, margin: '0 auto', padding: 24 }}>
       <header style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
         <div>
-          <h1 style={{ margin: 0 }}>Car Tracker</h1>
-          <p style={{ margin: '6px 0 0', opacity: 0.8 }}>Cars, expenses, and next-due maintenance.</p>
+          <h1 style={{ margin: 0 }}>{t('common:appName')}</h1>
+          <p style={{ margin: '6px 0 0', opacity: 0.8 }}>{t('cars:subtitle')}</p>
         </div>
+        <LanguageSwitcher />
       </header>
 
       <section style={{ marginTop: 22, padding: 16, border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }}>
-        <h2 style={{ marginTop: 0 }}>Add a car</h2>
+        <h2 style={{ marginTop: 0 }}>{t('cars:addCar.title')}</h2>
         <form onSubmit={onCreate} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 140px 160px', gap: 12 }}>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Nickname (optional)</div>
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="My Civic" />
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('cars:addCar.nicknameLabel')}</div>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('cars:addCar.nicknamePlaceholder')} />
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Model *</div>
-            <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="Honda Civic" required />
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('cars:addCar.modelLabel')}</div>
+            <input value={model} onChange={(e) => setModel(e.target.value)} placeholder={t('cars:addCar.modelPlaceholder')} required />
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Year</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('cars:addCar.yearLabel')}</div>
             <input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} min={1900} max={3000} />
           </label>
           <label>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Current km</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('cars:addCar.currentKmLabel')}</div>
             <input type="number" value={currentKm} onChange={(e) => setCurrentKm(Number(e.target.value))} min={0} />
           </label>
 
           <label style={{ gridColumn: '1 / -1' }}>
-            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>Placa (opcional)</div>
+            <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 6 }}>{t('cars:addCar.plateLabel')}</div>
             <input
               value={placa}
               onChange={(e) => setPlaca(e.target.value)}
-              placeholder="ABC1D23 ou ABC-1234"
+              placeholder={t('cars:addCar.platePlaceholder')}
               autoCapitalize="characters"
               spellCheck={false}
             />
             {placaErro ? <div style={{ color: 'salmon', fontSize: 12, marginTop: 6 }}>{placaErro}</div> : null}
             <div style={{ fontSize: 12, opacity: 0.65, marginTop: 6 }}>
-              Cadastro automático consulta placa e FIPE (custo de API) e preenche modelo e ano.
+              {t('cars:addCar.autoHelp')}
             </div>
           </label>
 
           <div style={{ gridColumn: '1 / -1', display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end', gap: 10 }}>
             <button type="button" disabled={!canAutoRegister || autoSaving} onClick={() => void onCadastrarAutomaticamente()}>
-              {autoSaving ? 'Consultando…' : 'Cadastrar automaticamente'}
+              {autoSaving ? t('cars:addCar.autoButtonLoading') : t('cars:addCar.autoButtonIdle')}
             </button>
             <button type="submit" disabled={!canCreate}>
-              Create car
+              {t('cars:addCar.createButton')}
             </button>
           </div>
         </form>
@@ -160,11 +165,11 @@ export function CarsPage() {
       </section>
 
       <section style={{ marginTop: 22 }}>
-        <h2 style={{ marginTop: 0 }}>Your cars</h2>
+        <h2 style={{ marginTop: 0 }}>{t('cars:list.title')}</h2>
         {cars === null ? (
-          <p>Loading…</p>
+          <p>{t('common:status.loading')}</p>
         ) : cars.length === 0 ? (
-          <p>No cars yet.</p>
+          <p>{t('cars:list.empty')}</p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 12 }}>
             {cars.map((c) => (
@@ -176,14 +181,18 @@ export function CarsPage() {
                       {c.model} ({c.year})
                     </div>
                     <div style={{ opacity: 0.8, fontSize: 13 }}>
-                      {c.placa ? <span style={{ marginRight: 8 }}>Placa {c.placa}</span> : null}
+                      {c.placa ? (
+                        <span style={{ marginRight: 8 }}>
+                          {t('cars:platePrefix')} {c.placa}
+                        </span>
+                      ) : null}
                       {c.currentKm.toLocaleString()} km
                     </div>
                   </div>
                   <IconRow>
-                    <IconOpen to={`/cars/${c.id}`} label="Open car" />
-                    <IconEdit label="Edit car" onClick={() => setEditingCar(c)} />
-                    <IconDelete label="Delete car" onClick={() => onDeleteCar(c)} />
+                    <IconOpen to={`/cars/${c.id}`} label={t('cars:openCar')} />
+                    <IconEdit label={t('cars:editCar')} onClick={() => setEditingCar(c)} />
+                    <IconDelete label={t('cars:deleteCar')} onClick={() => onDeleteCar(c)} />
                   </IconRow>
                 </div>
               </li>

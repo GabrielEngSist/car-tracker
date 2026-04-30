@@ -1,0 +1,28 @@
+{
+  "subtitle": "Auto, spese e manutenzione in scadenza.",
+  "addCar": {
+    "title": "Aggiungi un'auto",
+    "nicknameLabel": "Soprannome (opzionale)",
+    "nicknamePlaceholder": "La mia Civic",
+    "modelLabel": "Modello *",
+    "modelPlaceholder": "Honda Civic",
+    "yearLabel": "Anno",
+    "currentKmLabel": "Km attuali",
+    "plateLabel": "Targa (opzionale)",
+    "platePlaceholder": "ABC1D23 o ABC-1234",
+    "plateInvalid": "Targa non valida (usa il formato brasiliano vecchio ABC1234 o Mercosul, es. ABC1D23).",
+    "autoHelp": "La registrazione automatica consulta targa e FIPE (costo API) e compila modello/anno.",
+    "autoButtonIdle": "Registra automaticamente",
+    "autoButtonLoading": "Consultazione…",
+    "createButton": "Crea auto"
+  },
+  "list": {
+    "title": "Le tue auto",
+    "empty": "Ancora nessuna auto."
+  },
+  "confirmDelete": "Eliminare {{nameAndModel}}? Questo rimuove tutte le voci e i piani.",
+  "openCar": "Apri auto",
+  "editCar": "Modifica auto",
+  "deleteCar": "Elimina auto",
+  "platePrefix": "Targa"
+}

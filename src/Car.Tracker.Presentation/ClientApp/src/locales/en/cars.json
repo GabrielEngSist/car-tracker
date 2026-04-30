@@ -1,0 +1,28 @@
+{
+  "subtitle": "Cars, expenses, and next-due maintenance.",
+  "addCar": {
+    "title": "Add a car",
+    "nicknameLabel": "Nickname (optional)",
+    "nicknamePlaceholder": "My Civic",
+    "modelLabel": "Model *",
+    "modelPlaceholder": "Honda Civic",
+    "yearLabel": "Year",
+    "currentKmLabel": "Current km",
+    "plateLabel": "Plate (optional)",
+    "platePlaceholder": "ABC1D23 or ABC-1234",
+    "plateInvalid": "Invalid plate (use old Brazilian format ABC1234 or Mercosul, e.g. ABC1D23).",
+    "autoHelp": "Automatic registration consults plate and FIPE (API cost) and fills model/year.",
+    "autoButtonIdle": "Auto-register",
+    "autoButtonLoading": "Fetching…",
+    "createButton": "Create car"
+  },
+  "list": {
+    "title": "Your cars",
+    "empty": "No cars yet."
+  },
+  "confirmDelete": "Delete {{nameAndModel}}? This removes all services and plans.",
+  "openCar": "Open car",
+  "editCar": "Edit car",
+  "deleteCar": "Delete car",
+  "platePrefix": "Plate"
+}

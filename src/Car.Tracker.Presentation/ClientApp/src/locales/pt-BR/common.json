@@ -1,0 +1,25 @@
+{
+  "appName": "Car Tracker",
+  "language": "Idioma",
+  "languages": {
+    "pt-BR": "Português (Brasil)",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "it": "Italiano"
+  },
+  "actions": {
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "close": "Fechar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "open": "Abrir"
+  },
+  "status": {
+    "loading": "Carregando…"
+  },
+  "placeholders": {
+    "dash": "—"
+  }
+}
