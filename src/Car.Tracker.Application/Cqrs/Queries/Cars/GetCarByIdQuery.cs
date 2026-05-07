@@ -3,4 +3,4 @@ using Car.Tracker.Contracts;
 
 namespace Car.Tracker.Application.Cqrs.Queries.Cars;
 
-public sealed record GetCarByIdQuery(Guid CarId) : Request<GetCarByIdQuery, CarDto?>;
+public sealed record GetCarByIdQuery(Guid CarId) : IRequest<CarDto?>;

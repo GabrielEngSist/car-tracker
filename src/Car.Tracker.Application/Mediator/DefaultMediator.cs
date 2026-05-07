@@ -8,19 +8,12 @@ namespace Car.Tracker.Application.Mediator;
 /// </summary>
 public sealed class DefaultMediator(IServiceProvider serviceProvider) : IMediator
 {
-    public Task<ResponseValue<TResponse>> SendAsync<TResponse>(
-        IRequest<TResponse> request,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-        return request.DispatchAsync(this, cancellationToken);
-    }
-
     public async Task<ResponseValue<TResponse>> SendAsync<TRequest, TResponse>(
         TRequest request,
         CancellationToken cancellationToken)
         where TRequest : IRequest<TResponse>
     {
+        ArgumentNullException.ThrowIfNull(request);
         var handler = serviceProvider.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
         var behaviors = serviceProvider.GetServices<IPipelineBehavior<TRequest, TResponse>>().ToList();
 

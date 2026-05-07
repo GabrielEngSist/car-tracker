@@ -3,4 +3,4 @@ using Car.Tracker.Contracts;
 
 namespace Car.Tracker.Application.Cqrs.Commands.Cars;
 
-public sealed record CreateCarCommand(CreateCarRequest Request) : Request<CreateCarCommand, CreateCarOutcome>;
+public sealed record CreateCarCommand(CreateCarRequest Request) : IRequest<CreateCarOutcome>;

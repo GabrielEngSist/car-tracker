@@ -3,4 +3,4 @@ using Car.Tracker.Contracts;
 
 namespace Car.Tracker.Application.Cqrs.Commands.Fuelings;
 
-public sealed record UpdateFuelingCommand(Guid CarId, Guid FuelingId, UpdateFuelingEntryRequest Body) : Request<UpdateFuelingCommand, FuelingEntryDto?>;
+public sealed record UpdateFuelingCommand(Guid CarId, Guid FuelingId, UpdateFuelingEntryRequest Body) : IRequest<FuelingEntryDto?>;

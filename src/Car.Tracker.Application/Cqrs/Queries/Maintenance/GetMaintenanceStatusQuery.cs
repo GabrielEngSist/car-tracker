@@ -3,4 +3,4 @@ using Car.Tracker.Contracts;
 
 namespace Car.Tracker.Application.Cqrs.Queries.Maintenance;
 
-public sealed record GetMaintenanceStatusQuery(Guid CarId) : Request<GetMaintenanceStatusQuery, IReadOnlyList<MaintenanceStatusDto>?>;
+public sealed record GetMaintenanceStatusQuery(Guid CarId) : IRequest<IReadOnlyList<MaintenanceStatusDto>?>;
