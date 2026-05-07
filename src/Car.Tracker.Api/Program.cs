@@ -1,13 +1,18 @@
-using Car.Tracker.Domain.Reports;
 using Car.Tracker.Api.Configuration;
-using Car.Tracker.Api.ConsultarPlacaModels;
-using Car.Tracker.Domain.Entities;
-using Car.Tracker.Domain.Plates;
 using Car.Tracker.Application;
-using Car.Tracker.Application.Services;
+using Car.Tracker.Application.Common;
+using Car.Tracker.Application.Cqrs.Commands.Cars;
+using Car.Tracker.Application.Cqrs.Commands.ExpenseEntries;
+using Car.Tracker.Application.Cqrs.Commands.Fuelings;
+using Car.Tracker.Application.Cqrs.Commands.Maintenance;
+using Car.Tracker.Application.Cqrs.Queries.Cars;
+using Car.Tracker.Application.Cqrs.Queries.ExpenseEntries;
+using Car.Tracker.Application.Cqrs.Queries.Fuelings;
+using Car.Tracker.Application.Cqrs.Queries.Maintenance;
+using Car.Tracker.Application.Cqrs.Queries.Reports;
+using Car.Tracker.Application.Mediator;
 using Car.Tracker.Contracts;
 using Car.Tracker.Infrastructure;
-using Microsoft.Extensions.Options;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,34 +24,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-builder.Services.Configure<ConsultarPlacaOptions>(
-    builder.Configuration.GetSection(ConsultarPlacaOptions.SectionName));
-builder.Services.Configure<DatabaseSettings>(
-    builder.Configuration.GetSection(DatabaseSettings.SectionName));
-
-builder.Services.AddTransient<ConsultarPlacaAuthHandler>();
-builder.Services.AddHttpClient<IConsultarPlacaClient, ConsultarPlacaHttpClient>((sp, client) =>
-{
-    var o = sp.GetRequiredService<IOptions<ConsultarPlacaOptions>>().Value;
-    var url = o.Url?.Trim();
-    if (string.IsNullOrWhiteSpace(url))
-        return;
-    client.BaseAddress = new Uri(url.EndsWith('/') ? url : url + "/", UriKind.Absolute);
-})
-.AddHttpMessageHandler<ConsultarPlacaAuthHandler>();
-
-builder.Services.AddHttpClient<IConsultarPrecoFipeClient, ConsultarPrecoFipeHttpClient>((sp, client) =>
-{
-    var o = sp.GetRequiredService<IOptions<ConsultarPlacaOptions>>().Value;
-    var url = o.Url?.Trim();
-    if (string.IsNullOrWhiteSpace(url))
-        return;
-    client.BaseAddress = new Uri(url.EndsWith('/') ? url : url + "/", UriKind.Absolute);
-})
-.AddHttpMessageHandler<ConsultarPlacaAuthHandler>();
-
 var dbSettings = builder.Configuration.GetSection(DatabaseSettings.SectionName).Get<DatabaseSettings>() ?? new DatabaseSettings();
 var connectionString = $"Host={dbSettings.Host};Database={dbSettings.Database};Username={dbSettings.Username};Password={dbSettings.Password};Port={dbSettings.Port};SSL Mode=VerifyFull;Channel Binding=Require";
+
+builder.Services.AddConsultarPlacaIntegration(builder.Configuration);
 builder.Services.AddInfrastructure(connectionString);
 builder.Services.AddApplication();
 
@@ -69,110 +50,52 @@ app.MapGet("/api/health", () => Results.Ok(new { status = "ok" }))
 
 var cars = app.MapGroup("/api/cars");
 
-cars.MapGet("/", async (ICarTrackerService svc, CancellationToken ct) =>
-    Results.Ok(await svc.GetCarsAsync(ct)));
+cars.MapGet("/", async (IMediator mediator, CancellationToken ct) =>
+    Results.Ok(await mediator.Send(new GetCarsQuery(), ct)));
 
-cars.MapPost("/", async (
-    CreateCarRequest request,
-    ICarTrackerService svc,
-    IConsultarPlacaClient consultarPlaca,
-    IConsultarPrecoFipeClient consultarPrecoFipe,
-    CancellationToken cancellationToken) =>
+cars.MapPost("/", async (CreateCarRequest request, IMediator mediator, CancellationToken ct) =>
 {
-    if (request.CurrentKm < 0) return Results.BadRequest("CurrentKm is invalid.");
-
-    if (request.AutoBuscarDados)
+    var outcome = await mediator.Send(new CreateCarCommand(request), ct);
+    return outcome.Status switch
     {
-        if (string.IsNullOrWhiteSpace(request.Placa))
-            return Results.BadRequest("Placa is required for automatic registration.");
-
-        var placaNorm = PlacaBrasil.Normalizar(request.Placa);
-        if (!PlacaBrasil.EhValida(placaNorm))
-            return Results.BadRequest("Invalid plate format (use Mercosul or old Brazilian format).");
-
-        ConsultarPlacaResponse? rPlaca;
-        ConsultarPrecoFipeResponse? rFipe;
-        try
-        {
-            rPlaca = await consultarPlaca.ConsultarPorPlacaAsync(placaNorm, cancellationToken);
-            rFipe = await consultarPrecoFipe.ConsultarPorPlacaAsync(placaNorm, cancellationToken);
-        }
-        catch (HttpRequestException ex)
-        {
-            return Results.Problem(detail: ex.Message, statusCode: StatusCodes.Status502BadGateway);
-        }
-
-        if (rPlaca is null || !string.Equals(rPlaca.Status, "ok", StringComparison.OrdinalIgnoreCase))
-            return Results.BadRequest($"consultarPlaca failed: {rPlaca?.Mensagem ?? "empty response"}");
-
-        if (rFipe is null || !string.Equals(rFipe.Status, "ok", StringComparison.OrdinalIgnoreCase))
-            return Results.BadRequest($"consultarPrecoFipe failed: {rFipe?.Mensagem ?? "empty response"}");
-
-        var car = new CarEntity { Model = "temp", Year = 2000, CurrentKm = request.CurrentKm };
-        ConsultarPlacaMapper.PreencherCarro(car, rPlaca, request.CurrentKm, request.Name, placaNorm);
-
-        car.ConsultaPlaca = ConsultarPlacaMapper.ToConsultaPlaca(car.Id, rPlaca);
-        car.ConsultaPrecoFipe = ConsultarPrecoFipeMapper.ToConsultaPrecoFipe(car.Id, rFipe);
-
-        var created = await svc.CreateCarAsync(car, cancellationToken);
-        return Results.Created($"/api/cars/{created.Id}", created);
-    }
-
-    if (string.IsNullOrWhiteSpace(request.Model)) return Results.BadRequest("Model is required.");
-    if (request.Year is null or < 1900 or > 3000) return Results.BadRequest("Year is invalid.");
-
-    string? placaManual = null;
-    if (!string.IsNullOrWhiteSpace(request.Placa))
-    {
-        placaManual = PlacaBrasil.Normalizar(request.Placa);
-        if (!PlacaBrasil.EhValida(placaManual))
-            return Results.BadRequest("Invalid plate format.");
-    }
-
-    var carManual = new CarEntity
-    {
-        Model = request.Model.Trim(),
-        Year = request.Year.Value,
-        CurrentKm = request.CurrentKm,
-        Name = string.IsNullOrWhiteSpace(request.Name) ? null : request.Name.Trim(),
-        Placa = placaManual,
+        CreateCarStatus.Created => Results.Created($"/api/cars/{outcome.Car!.Id}", outcome.Car),
+        CreateCarStatus.BadRequest => Results.BadRequest(outcome.Message),
+        CreateCarStatus.BadGateway => Results.Problem(detail: outcome.Message, statusCode: StatusCodes.Status502BadGateway),
+        _ => Results.Problem(statusCode: 500),
     };
-
-    var createdManual = await svc.CreateCarAsync(carManual, cancellationToken);
-    return Results.Created($"/api/cars/{createdManual.Id}", createdManual);
 });
 
-cars.MapGet("/{carId:guid}", async (Guid carId, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapGet("/{carId:guid}", async (Guid carId, IMediator mediator, CancellationToken ct) =>
 {
-    var car = await svc.GetCarAsync(carId, ct);
+    var car = await mediator.Send(new GetCarByIdQuery(carId), ct);
     return car is null ? Results.NotFound() : Results.Ok(car);
 });
 
-cars.MapGet("/{carId:guid}/registry", async (Guid carId, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapGet("/{carId:guid}/registry", async (Guid carId, IMediator mediator, CancellationToken ct) =>
 {
-    var registry = await svc.GetCarRegistryAsync(carId, ct);
+    var registry = await mediator.Send(new GetCarRegistryQuery(carId), ct);
     return registry is null ? Results.NotFound() : Results.Ok(registry);
 });
 
-cars.MapPatch("/{carId:guid}", async (Guid carId, UpdateCarRequest request, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapPatch("/{carId:guid}", async (Guid carId, UpdateCarRequest request, IMediator mediator, CancellationToken ct) =>
 {
     try
     {
-        var updated = await svc.UpdateCarAsync(carId, request, ct);
+        var updated = await mediator.Send(new UpdateCarCommand(carId, request), ct);
         return updated is null ? Results.NotFound() : Results.Ok(updated);
     }
-    catch (ArgumentException ex)
+    catch (ValidationException ex)
     {
         return Results.BadRequest(ex.Message);
     }
 });
 
-cars.MapDelete("/{carId:guid}", async (Guid carId, ICarTrackerService svc, CancellationToken ct) =>
-    await svc.DeleteCarAsync(carId, ct) ? Results.NoContent() : Results.NotFound());
+cars.MapDelete("/{carId:guid}", async (Guid carId, IMediator mediator, CancellationToken ct) =>
+    await mediator.Send(new DeleteCarCommand(carId), ct) ? Results.NoContent() : Results.NotFound());
 
-cars.MapGet("/{carId:guid}/fuelings", async (Guid carId, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapGet("/{carId:guid}/fuelings", async (Guid carId, IMediator mediator, CancellationToken ct) =>
 {
-    var items = await svc.GetCarFuelingsAsync(carId, ct);
+    var items = await mediator.Send(new GetCarFuelingsQuery(carId), ct);
     return items is null ? Results.NotFound() : Results.Ok(items);
 });
 
@@ -180,22 +103,18 @@ cars.MapGet("/{carId:guid}/reports/fuel-full-tank", async (
     Guid carId,
     string? basis,
     string? period,
-    ICarTrackerService svc,
+    IMediator mediator,
     CancellationToken ct) =>
 {
-    if (!CostPerKmReportQuery.ParseBasis(basis, out var lifetimeMode))
-        return Results.BadRequest("basis must be 'period' or 'lifetime'.");
-
-    PeriodAggregator periodAgg = PeriodAggregator.Total;
-    if (!lifetimeMode)
+    try
     {
-        if (!CostPerKmReportQuery.TryParsePeriod(period, out periodAgg))
-            return Results.BadRequest("period invalid. Use total, 1d, 1m, 6m, 1y.");
+        var report = await mediator.Send(new GetFuelFullTankReportQuery(carId, basis, period), ct);
+        return report is null ? Results.NotFound() : Results.Ok(report);
     }
-
-    var today = DateOnly.FromDateTime(DateTime.UtcNow);
-    var report = await svc.GetFuelFullTankReportAsync(carId, lifetimeMode, periodAgg, today, ct);
-    return report is null ? Results.NotFound() : Results.Ok(report);
+    catch (ValidationException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
 });
 
 cars.MapGet("/{carId:guid}/reports/cost-per-km", async (
@@ -203,132 +122,125 @@ cars.MapGet("/{carId:guid}/reports/cost-per-km", async (
     string? basis,
     string? period,
     string? distanceRef,
-    ICarTrackerService svc,
+    IMediator mediator,
     CancellationToken ct) =>
 {
-    if (!CostPerKmReportQuery.ParseBasis(basis, out var lifetimeMode))
-        return Results.BadRequest("basis must be 'period' or 'lifetime'.");
-
-    if (!CostPerKmReportQuery.TryParseDistanceRef(distanceRef, out var dMult))
-        return Results.BadRequest("distanceRef invalid. Use total, km1, km10, km100, km1000 (or 1,10,100,1000).");
-
-    PeriodAggregator periodAgg = PeriodAggregator.Total;
-    if (!lifetimeMode)
+    try
     {
-        if (!CostPerKmReportQuery.TryParsePeriod(period, out periodAgg))
-            return Results.BadRequest("period invalid. Use total, 1d, 1m, 6m, 1y.");
+        var report = await mediator.Send(new GetCostPerKmReportQuery(carId, basis, period, distanceRef), ct);
+        return report is null ? Results.NotFound() : Results.Ok(report);
     }
-
-    var today = DateOnly.FromDateTime(DateTime.UtcNow);
-    var report = await svc.GetCostPerKmReportAsync(carId, lifetimeMode, periodAgg, dMult, today, ct);
-    return report is null ? Results.NotFound() : Results.Ok(report);
+    catch (ValidationException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
 });
 
-cars.MapPost("/{carId:guid}/fuelings", async (Guid carId, CreateFuelingEntryRequest request, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapPost("/{carId:guid}/fuelings", async (Guid carId, CreateFuelingEntryRequest request, IMediator mediator, CancellationToken ct) =>
 {
     try
     {
-        var created = await svc.CreateFuelingAsync(carId, request, ct);
+        var created = await mediator.Send(new CreateFuelingCommand(carId, request), ct);
         return created is null ? Results.NotFound() : Results.Created($"/api/cars/{carId}/fuelings/{created.Id}", created);
     }
-    catch (ArgumentException ex)
+    catch (ValidationException ex)
     {
         return Results.BadRequest(ex.Message);
     }
 });
 
-cars.MapPatch("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid fuelingId, UpdateFuelingEntryRequest request, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapPatch("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid fuelingId, UpdateFuelingEntryRequest request, IMediator mediator, CancellationToken ct) =>
 {
     try
     {
-        var updated = await svc.UpdateFuelingAsync(carId, fuelingId, request, ct);
+        var updated = await mediator.Send(new UpdateFuelingCommand(carId, fuelingId, request), ct);
         return updated is null ? Results.NotFound() : Results.Ok(updated);
     }
-    catch (ArgumentException ex)
+    catch (ValidationException ex)
     {
         return Results.BadRequest(ex.Message);
     }
 });
 
-cars.MapDelete("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid fuelingId, ICarTrackerService svc, CancellationToken ct) =>
-    await svc.DeleteFuelingAsync(carId, fuelingId, ct) ? Results.NoContent() : Results.NotFound());
+cars.MapDelete("/{carId:guid}/fuelings/{fuelingId:guid}", async (Guid carId, Guid fuelingId, IMediator mediator, CancellationToken ct) =>
+    await mediator.Send(new DeleteFuelingCommand(carId, fuelingId), ct) ? Results.NoContent() : Results.NotFound());
 
-app.MapGet("/api/fuelings", async (ICarTrackerService svc, CancellationToken ct) =>
-    Results.Ok(await svc.GetAllFuelingsAsync(ct)));
+app.MapGet("/api/fuelings", async (IMediator mediator, CancellationToken ct) =>
+    Results.Ok(await mediator.Send(new GetAllFuelingsQuery(), ct)));
 
-cars.MapGet("/{carId:guid}/entries", async (Guid carId, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapGet("/{carId:guid}/entries", async (Guid carId, IMediator mediator, CancellationToken ct) =>
 {
-    var items = await svc.GetCarExpenseEntriesAsync(carId, ct);
+    var items = await mediator.Send(new GetCarExpenseEntriesQuery(carId), ct);
     return items is null ? Results.NotFound() : Results.Ok(items);
 });
 
-cars.MapPost("/{carId:guid}/entries", async (Guid carId, CreateExpenseEntryRequest request, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapPost("/{carId:guid}/entries", async (Guid carId, CreateExpenseEntryRequest request, IMediator mediator, CancellationToken ct) =>
 {
     try
     {
-        var created = await svc.CreateExpenseEntryAsync(carId, request, ct);
+        var created = await mediator.Send(new CreateExpenseEntryCommand(carId, request), ct);
         return created is null ? Results.NotFound() : Results.Created($"/api/cars/{carId}/entries/{created.Id}", created);
     }
-    catch (ArgumentException ex)
+    catch (ValidationException ex)
     {
         return Results.BadRequest(ex.Message);
     }
 });
 
-cars.MapPatch("/{carId:guid}/entries/{entryId:guid}", async (Guid carId, Guid entryId, UpdateExpenseEntryRequest request, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapPatch("/{carId:guid}/entries/{entryId:guid}", async (Guid carId, Guid entryId, UpdateExpenseEntryRequest request, IMediator mediator, CancellationToken ct) =>
 {
     try
     {
-        var updated = await svc.UpdateExpenseEntryAsync(carId, entryId, request, ct);
+        var updated = await mediator.Send(new UpdateExpenseEntryCommand(carId, entryId, request), ct);
         return updated is null ? Results.NotFound() : Results.Ok(updated);
     }
-    catch (ArgumentException ex)
+    catch (ValidationException ex)
     {
         return Results.BadRequest(ex.Message);
     }
 });
 
-cars.MapDelete("/{carId:guid}/entries/{entryId:guid}", async (Guid carId, Guid entryId, ICarTrackerService svc, CancellationToken ct) =>
-    await svc.DeleteExpenseEntryAsync(carId, entryId, ct) ? Results.NoContent() : Results.NotFound());
+cars.MapDelete("/{carId:guid}/entries/{entryId:guid}", async (Guid carId, Guid entryId, IMediator mediator, CancellationToken ct) =>
+    await mediator.Send(new DeleteExpenseEntryCommand(carId, entryId), ct) ? Results.NoContent() : Results.NotFound());
 
-cars.MapGet("/{carId:guid}/maintenance-plans", async (Guid carId, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapGet("/{carId:guid}/maintenance-plans", async (Guid carId, IMediator mediator, CancellationToken ct) =>
 {
-    var items = await svc.GetMaintenancePlansAsync(carId, ct);
+    var items = await mediator.Send(new GetMaintenancePlansQuery(carId), ct);
     return items is null ? Results.NotFound() : Results.Ok(items);
 });
 
-cars.MapPost("/{carId:guid}/maintenance-plans", async (Guid carId, CreateMaintenancePlanItemRequest request, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapPost("/{carId:guid}/maintenance-plans", async (Guid carId, CreateMaintenancePlanItemRequest request, IMediator mediator, CancellationToken ct) =>
 {
     try
     {
-        var created = await svc.CreateMaintenancePlanItemAsync(carId, request, ct);
+        var created = await mediator.Send(new CreateMaintenancePlanItemCommand(carId, request), ct);
         return created is null ? Results.NotFound() : Results.Created($"/api/cars/{carId}/maintenance-plans/{created.Id}", created);
     }
-    catch (ArgumentException ex)
+    catch (ValidationException ex)
     {
         return Results.BadRequest(ex.Message);
     }
 });
 
-cars.MapPatch("/{carId:guid}/maintenance-plans/{planId:guid}", async (Guid carId, Guid planId, UpdateMaintenancePlanItemRequest request, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapPatch("/{carId:guid}/maintenance-plans/{planId:guid}", async (Guid carId, Guid planId, UpdateMaintenancePlanItemRequest request, IMediator mediator, CancellationToken ct) =>
 {
     try
     {
-        var updated = await svc.UpdateMaintenancePlanItemAsync(carId, planId, request, ct);
+        var updated = await mediator.Send(new UpdateMaintenancePlanItemCommand(carId, planId, request), ct);
         return updated is null ? Results.NotFound() : Results.Ok(updated);
     }
-    catch (ArgumentException ex)
+    catch (ValidationException ex)
     {
         return Results.BadRequest(ex.Message);
     }
 });
 
-cars.MapDelete("/{carId:guid}/maintenance-plans/{planId:guid}", async (Guid carId, Guid planId, ICarTrackerService svc, CancellationToken ct) =>
-    await svc.DeleteMaintenancePlanItemAsync(carId, planId, ct) ? Results.NoContent() : Results.NotFound());
+cars.MapDelete("/{carId:guid}/maintenance-plans/{planId:guid}", async (Guid carId, Guid planId, IMediator mediator, CancellationToken ct) =>
+    await mediator.Send(new DeleteMaintenancePlanItemCommand(carId, planId), ct) ? Results.NoContent() : Results.NotFound());
 
-cars.MapGet("/{carId:guid}/maintenance-status", async (Guid carId, ICarTrackerService svc, CancellationToken ct) =>
+cars.MapGet("/{carId:guid}/maintenance-status", async (Guid carId, IMediator mediator, CancellationToken ct) =>
 {
-    var status = await svc.GetMaintenanceStatusAsync(carId, ct);
+    var status = await mediator.Send(new GetMaintenanceStatusQuery(carId), ct);
     return status is null ? Results.NotFound() : Results.Ok(status);
 });
 

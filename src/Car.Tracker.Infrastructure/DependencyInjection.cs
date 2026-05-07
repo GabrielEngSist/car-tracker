@@ -1,7 +1,11 @@
+using Car.Tracker.Domain.Ports.Integration;
+using Car.Tracker.Domain.Ports.Persistence;
 using Car.Tracker.Infrastructure.Data;
-using Car.Tracker.Application.Abstractions;
+using Car.Tracker.Infrastructure.Integration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Car.Tracker.Infrastructure;
 
@@ -10,7 +14,35 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
     {
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
-        services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+        services.AddScoped<ITrackerPersistence, EfTrackerPersistence>();
+        return services;
+    }
+
+    /// <summary>HTTP clients for consultarPlaca / consultarPrecoFipe (same base URL + auth).</summary>
+    public static IServiceCollection AddConsultarPlacaIntegration(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<ConsultarPlacaOptions>(configuration.GetSection(ConsultarPlacaOptions.SectionName));
+        services.AddTransient<ConsultarPlacaAuthHandler>();
+        services.AddHttpClient<IConsultarPlacaPort, ConsultarPlacaHttpClient>((sp, client) =>
+        {
+            var o = sp.GetRequiredService<IOptions<ConsultarPlacaOptions>>().Value;
+            var url = o.Url?.Trim();
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+            client.BaseAddress = new Uri(url.EndsWith('/') ? url : url + "/", UriKind.Absolute);
+        })
+        .AddHttpMessageHandler<ConsultarPlacaAuthHandler>();
+
+        services.AddHttpClient<IConsultarPrecoFipePort, ConsultarPrecoFipeHttpClient>((sp, client) =>
+        {
+            var o = sp.GetRequiredService<IOptions<ConsultarPlacaOptions>>().Value;
+            var url = o.Url?.Trim();
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+            client.BaseAddress = new Uri(url.EndsWith('/') ? url : url + "/", UriKind.Absolute);
+        })
+        .AddHttpMessageHandler<ConsultarPlacaAuthHandler>();
+
         return services;
     }
 
@@ -21,4 +53,3 @@ public static class DependencyInjection
         await db.Database.MigrateAsync(cancellationToken);
     }
 }
-

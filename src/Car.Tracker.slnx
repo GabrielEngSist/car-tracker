@@ -3,7 +3,6 @@
   <Project Path="Car.Tracker.Application/Car.Tracker.Application.csproj" />
   <Project Path="Car.Tracker.Contracts/Car.Tracker.Contracts.csproj" />
   <Project Path="Car.Tracker.Domain/Car.Tracker.Domain.csproj" />
-  <Project Path="Car.Tracker.Helpers/Car.Tracker.Helpers.csproj" />
   <Project Path="Car.Tracker.Infrastructure/Car.Tracker.Infrastructure.csproj" />
   <Project Path="Car.Tracker.Tests/Car.Tracker.Tests.csproj" />
 </Solution>

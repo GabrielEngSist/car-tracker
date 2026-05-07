@@ -1,0 +1,90 @@
+using Car.Tracker.Contracts;
+using Car.Tracker.Domain.Entities;
+
+namespace Car.Tracker.Application.Cqrs.Queries.Cars;
+
+internal static class CarRegistryDtoMapping
+{
+    public static ConsultaPlacaDto ToConsultaPlacaDto(ConsultaPlaca x) =>
+        new(
+            x.Id,
+            x.CarId,
+            x.Status,
+            x.Mensagem,
+            x.DataSolicitacao,
+            x.RequestPlaca,
+            x.Placa,
+            x.Chassi,
+            x.AnoFabricacao,
+            x.AnoModelo,
+            x.Marca,
+            x.Modelo,
+            x.Cor,
+            x.Segmento,
+            x.Combustivel,
+            x.Procedencia,
+            x.Municipio,
+            x.UfMunicipio,
+            x.TipoVeiculo,
+            x.SubSegmento,
+            x.NumeroMotor,
+            x.NumeroCaixaCambio,
+            x.Potencia,
+            x.Cilindradas,
+            x.NumeroEixos,
+            x.CapacidadeMaximaTracao,
+            x.CapacidadePassageiro,
+            x.CreatedAt,
+            x.UpdatedAt);
+
+    public static ConsultaPrecoFipeDto ToConsultaPrecoFipeDto(ConsultaPrecoFipe x)
+    {
+        var itens = x.Itens
+            .OrderBy(i => i.CodigoFipe)
+            .ThenBy(i => i.ModeloVersao)
+            .Select(i => new ConsultaPrecoFipeItemDto(
+                i.Id,
+                i.ConsultaPrecoFipeId,
+                i.CodigoFipe,
+                i.ModeloVersao,
+                i.Preco,
+                i.MesReferencia,
+                i.HistoricoJson,
+                i.CreatedAt,
+                i.UpdatedAt))
+            .ToList();
+
+        return new ConsultaPrecoFipeDto(
+            x.Id,
+            x.CarId,
+            x.Status,
+            x.Mensagem,
+            x.DataSolicitacao,
+            x.RequestPlaca,
+            x.VeiculoPlaca,
+            x.VeiculoChassi,
+            x.VeiculoAnoFabricacao,
+            x.VeiculoAnoModelo,
+            x.VeiculoMarca,
+            x.VeiculoModelo,
+            x.VeiculoCor,
+            x.VeiculoSegmento,
+            x.VeiculoCombustivel,
+            x.VeiculoProcedencia,
+            x.VeiculoMunicipio,
+            x.VeiculoUfMunicipio,
+            x.TipoVeiculo,
+            x.SubSegmento,
+            x.NumeroMotor,
+            x.NumeroCaixaCambio,
+            x.Potencia,
+            x.Cilindradas,
+            x.NumeroEixos,
+            x.CapacidadeMaximaTracao,
+            x.CapacidadePassageiro,
+            x.PesoBrutoTotal,
+            x.CreatedAt,
+            x.UpdatedAt,
+            itens);
+    }
+}

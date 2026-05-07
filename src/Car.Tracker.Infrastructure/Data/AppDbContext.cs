@@ -1,10 +1,9 @@
-using Car.Tracker.Application.Abstractions;
 using Car.Tracker.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Car.Tracker.Infrastructure.Data;
 
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<CarEntity> Cars => Set<CarEntity>();
     public DbSet<ExpenseEntry> ExpenseEntries => Set<ExpenseEntry>();
