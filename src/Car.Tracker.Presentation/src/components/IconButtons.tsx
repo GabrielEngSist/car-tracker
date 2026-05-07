@@ -10,7 +10,7 @@ const base: React.CSSProperties = {
   borderRadius: 10,
   border: '1px solid var(--control-border)',
   background: 'var(--control-bg)',
-  color: 'inherit',
+  color: 'var(--control-text)',
   cursor: 'pointer',
   textDecoration: 'none',
   flexShrink: 0,
@@ -49,7 +49,7 @@ export function IconEdit({ onClick, label = 'Edit', disabled }: { onClick: () =>
 
 export function IconDelete({ onClick, label = 'Delete', disabled }: { onClick: () => void; label?: string; disabled?: boolean }) {
   return (
-    <button type="button" style={{ ...base, color: 'var(--danger)' }} title={label} aria-label={label} onClick={onClick} disabled={disabled}>
+    <button type="button" style={{ ...base, color: 'var(--control-text)' }} title={label} aria-label={label} onClick={onClick} disabled={disabled}>
       <Svg>
         <polyline points="3 6 5 6 21 6" />
         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />

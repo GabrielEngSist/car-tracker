@@ -15,7 +15,7 @@ export function ThemeToggle() {
         borderRadius: 10,
         border: '1px solid var(--control-border)',
         background: 'var(--control-bg)',
-        color: 'inherit',
+        color: 'var(--control-text)',
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',

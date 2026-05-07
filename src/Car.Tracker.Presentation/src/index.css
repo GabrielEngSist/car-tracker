@@ -3,18 +3,34 @@
 }
 
 :root {
-  --bg: #0f1115;
-  --surface: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.14);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.72);
+  --brand-riot-red: #eb0029;
+  --brand-riot-dark: #111111;
+  --brand-riot-gray: #f9f9f9;
+  
+  /* Light mode defaults */
+  --bg: #f2f2f2;
+  --surface: #ffffff;
+  --border: #e1e1e1;
+  --text: #111111;
+  --muted: #7e7e7e;
 
-  --control-bg: rgba(255, 255, 255, 0.08);
-  --control-border: rgba(255, 255, 255, 0.16);
-  --danger: #fa8072;
-  --nav-bg: #141824;
-  --nav-text: rgba(255, 255, 255, 0.9);
-  --nav-muted: rgba(255, 255, 255, 0.7);
+  --control-bg: var(--brand-riot-red);
+  --control-border: var(--brand-riot-red);
+  --control-text: #ffffff;
+
+  --danger: var(--brand-riot-red);
+  --nav-bg: transparent;
+  --nav-text: #555555;
+  --nav-muted: #7e7e7e;
+  --nav-active-bg: #f9f9f9;
+  --nav-active-text: #111111;
+  --nav-active-border: var(--brand-riot-red);
+
+  --fab-bg: var(--brand-riot-red);
+  --fab-text: #ffffff;
+  
+  --header-bg: #111111;
+  --header-text: #ffffff;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Helvetica Neue',
     Arial, sans-serif;
@@ -24,33 +40,77 @@
 }
 
 :root[data-theme='light'] {
-  --bg: #f7f8fb;
-  --surface: rgba(0, 0, 0, 0.035);
-  --border: rgba(0, 0, 0, 0.14);
-  --text: rgba(0, 0, 0, 0.92);
-  --muted: rgba(0, 0, 0, 0.68);
+  --bg: #f2f2f2;
+  --surface: #ffffff;
+  --border: #e1e1e1;
+  --text: #111111;
+  --muted: #7e7e7e;
 
-  --control-bg: rgba(0, 0, 0, 0.035);
-  --control-border: rgba(0, 0, 0, 0.16);
-  --danger: #c0392b;
-  --nav-bg: #ffffff;
-  --nav-text: rgba(0, 0, 0, 0.88);
-  --nav-muted: rgba(0, 0, 0, 0.62);
+  --control-bg: var(--brand-riot-red);
+  --control-border: var(--brand-riot-red);
+  --control-text: #ffffff;
+
+  --danger: var(--brand-riot-red);
+  --nav-bg: transparent;
+  --nav-text: #555555;
+  --nav-muted: #7e7e7e;
+  --nav-active-bg: #f9f9f9;
+  --nav-active-text: #111111;
+  --nav-active-border: var(--brand-riot-red);
+
+  --fab-bg: var(--brand-riot-red);
+  --fab-text: #ffffff;
+  
+  --header-bg: #111111;
+  --header-text: #ffffff;
 }
 
 :root[data-theme='dark'] {
-  --bg: #0f1115;
-  --surface: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.14);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.72);
+  --bg: #0a0a0c;
+  --surface: #1e2328;
+  --border: #3c3c41;
+  --text: #f0e6d2;
+  --muted: #a09b8c;
 
-  --control-bg: rgba(255, 255, 255, 0.08);
-  --control-border: rgba(255, 255, 255, 0.16);
-  --danger: #fa8072;
-  --nav-bg: #141824;
-  --nav-text: rgba(255, 255, 255, 0.9);
-  --nav-muted: rgba(255, 255, 255, 0.7);
+  --control-bg: var(--brand-riot-red);
+  --control-border: var(--brand-riot-red);
+  --control-text: #ffffff;
+
+  --danger: var(--brand-riot-red);
+  --nav-bg: transparent;
+  --nav-text: #a09b8c;
+  --nav-muted: #7e7e7e;
+  --nav-active-bg: #2b2a29;
+  --nav-active-text: #f0e6d2;
+  --nav-active-border: var(--brand-riot-red);
+
+  --fab-bg: var(--brand-riot-red);
+  --fab-text: #ffffff;
+  
+  --header-bg: #111111;
+  --header-text: #ffffff;
+}
+
+/* Main page titles (h1 + logo) */
+.pageTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.pageTitleLogo {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.pageTitleText {
+  min-width: 0;
 }
 
 html,
@@ -70,10 +130,152 @@ a {
 /* Shell layout + navigation (mobile-first) */
 .appShell {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topHeader {
+  background: var(--header-bg);
+  color: var(--header-text);
+  padding: 0 16px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topHeaderInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.headerBrand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  font-family: 'Great Vibes', cursive;
+  white-space: nowrap;
+}
+
+.headerBrandLogo {
+  flex-shrink: 0;
+  width: 78px;
+  height: 78px;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .headerBrand {
+    font-size: 2.2rem;
+    gap: 12px;
+  }
+  
+  .headerBrandLogo {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.languageSwitcher {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--header-text);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.languageSwitcher:hover {
+  color: var(--brand-riot-red);
+}
+
+.languageSelect {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.userProfileMock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.userProfileMock:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+}
+
+.userName {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--header-text);
+}
+
+.userTag {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.userProfileMock:hover .userAvatar {
+  border-color: var(--brand-riot-red);
+}
+
+.pageContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .shellMain {
   padding-bottom: 84px;
+  flex: 1;
 }
 
 .sidebar {
@@ -92,8 +294,8 @@ a {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: end;
   gap: 12px;
-  background: var(--nav-bg);
-  border-top: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -106,13 +308,16 @@ a {
   gap: 4px;
   font-size: 12px;
   padding: 6px 8px;
-  border-radius: 12px;
+  border-radius: 8px;
   min-width: 0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .navItem--active {
-  color: var(--nav-text);
-  background: color-mix(in srgb, var(--control-bg) 55%, transparent);
+  color: var(--nav-active-text);
+  background: var(--nav-active-bg);
 }
 
 .navIcon {
@@ -128,8 +333,9 @@ a {
   width: 54px;
   height: 54px;
   border-radius: 999px;
-  border: 1px solid var(--control-border);
-  background: color-mix(in srgb, var(--control-bg) 85%, transparent);
+  border: none;
+  background: var(--fab-bg);
+  color: var(--fab-text);
   font-size: 26px;
   padding: 0;
   line-height: 1;
@@ -180,7 +386,7 @@ a {
   bottom: 86px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: var(--bg);
+  background: var(--surface);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
   overflow: hidden;
 }
@@ -189,10 +395,12 @@ a {
   width: 100%;
   text-align: left;
   border: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+  border-bottom: 1px solid var(--border);
   background: transparent;
   padding: 14px 14px;
   border-radius: 0;
+  color: var(--text);
+  font-weight: 600;
 }
 
 .addMenuItem:last-child {
@@ -200,46 +408,55 @@ a {
 }
 
 @media (min-width: 900px) {
-  .appShell {
-    display: grid;
-    grid-template-columns: 240px 1fr;
+  .pageContainer {
+    flex-direction: row;
+    padding: 40px 24px;
+    gap: 40px;
+    align-items: flex-start;
   }
 
   .sidebar {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    padding: 16px;
-    background: var(--nav-bg);
-    border-right: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+    width: 260px;
+    background: transparent;
     position: sticky;
-    top: 0;
-    height: 100vh;
-  }
-
-  .sidebarBrand {
-    font-weight: 800;
-    color: var(--nav-text);
-    letter-spacing: 0.2px;
+    top: 120px; /* 80px header + 40px padding */
   }
 
   .sidebarNav {
-    display: grid;
-    gap: 6px;
-    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
 
   .sidebar .navItem {
     flex-direction: row;
     justify-content: flex-start;
-    gap: 10px;
-    font-size: 14px;
-    padding: 10px 12px;
+    gap: 12px;
+    font-size: 13px;
+    padding: 16px 20px;
     color: var(--nav-muted);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+  }
+
+  .sidebar .navItem:hover {
+    background: var(--nav-active-bg);
+    color: var(--text);
+  }
+
+  .sidebar .navItem--active {
+    background: var(--nav-active-bg);
+    color: var(--nav-active-text);
+    border-left: 4px solid var(--nav-active-border);
+    border-radius: 0 8px 8px 0;
   }
 
   .sidebar .navIcon {
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .sidebar .navLabel {
@@ -248,6 +465,14 @@ a {
 
   .shellMain {
     padding-bottom: 0;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    min-height: 600px;
+  }
+
+  :root[data-theme='dark'] .shellMain {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   }
 
   .bottomNav {
@@ -257,55 +482,60 @@ a {
   .fab {
     display: inline-flex;
     position: fixed;
-    right: 22px;
-    bottom: 22px;
+    right: 32px;
+    bottom: 32px;
     z-index: 55;
-    width: 58px;
-    height: 58px;
+    width: 64px;
+    height: 64px;
     border-radius: 999px;
     padding: 0;
     align-items: center;
     justify-content: center;
-    font-size: 30px;
+    font-size: 32px;
     line-height: 1;
-    border: 1px solid var(--control-border);
-    background: var(--control-bg);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    border: none;
+    background: var(--fab-bg);
+    color: var(--fab-text);
+    box-shadow: 0 18px 40px rgba(235, 0, 41, 0.35);
+    transition: transform 0.2s ease;
+  }
+
+  .fab:hover {
+    transform: scale(1.05);
   }
 
   .addMenu {
     left: auto;
-    right: 22px;
-    bottom: 90px;
+    right: 32px;
+    bottom: 110px;
     width: 280px;
   }
 }
 
 /* Layout helpers (mobile-first) */
 .page {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 16px;
+  padding: 24px;
 }
 
 @media (min-width: 768px) {
   .page {
-    padding: 24px;
+    padding: 40px;
   }
 }
 
 .pageHeader {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  margin-bottom: 32px;
 }
 
 @media (min-width: 768px) {
   .pageHeader {
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 16px;
   }
 }
 
@@ -313,12 +543,12 @@ a {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .card {
-  margin-top: 18px;
-  padding: 16px;
+  margin-top: 24px;
+  padding: 24px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: var(--surface);
@@ -327,7 +557,7 @@ a {
 .gridForm {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 
 @media (min-width: 768px) {
@@ -342,7 +572,7 @@ a {
   .grid2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 20px;
   }
 
   .carEntryForm {
@@ -359,20 +589,36 @@ button {
 input,
 select {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--bg);
   color: var(--text);
+  transition: border-color 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--brand-riot-red);
 }
 
 button {
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 12px 20px;
+  border-radius: 8px;
   border: 1px solid var(--control-border);
   background: var(--control-bg);
-  color: var(--text);
+  color: var(--control-text);
   cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(1.1);
 }
 
 button:disabled {
@@ -389,7 +635,7 @@ h2 {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -397,14 +643,14 @@ h2 {
 }
 
 .modal-panel {
-  width: min(480px, 100%);
-  max-height: min(90vh, 640px);
+  width: min(520px, 100%);
+  max-height: min(90vh, 700px);
   overflow: auto;
-  background: var(--bg);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
 }
 
 .modal-panel--fullscreen {
@@ -413,32 +659,43 @@ h2 {
   max-height: none;
   border-radius: 16px;
   position: relative;
-  padding: 18px;
+  padding: 24px;
 }
 
 .modal-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 16px;
+  right: 16px;
   width: 40px;
   height: 40px;
   padding: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+}
+
+.modal-close:hover {
+  background: var(--bg);
+  color: var(--text);
 }
 
 .modal-panel h3 {
-  margin: 0 0 14px;
-  font-size: 1.15rem;
+  margin: 0 0 20px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 12px;
+  margin-top: 24px;
 }

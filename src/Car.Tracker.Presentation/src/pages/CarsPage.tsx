@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { CarApi, type CarDto } from '../api'
 import { CarEditModal } from '../components/CarEditModal'
+import { PageTitle } from '../components/PageTitle'
 import { IconDelete, IconEdit, IconOpen, IconRow } from '../components/IconButtons'
 import { useTranslation } from 'react-i18next'
 
@@ -37,7 +38,7 @@ export function CarsPage() {
     <div className="page">
       <header className="pageHeader">
         <div>
-          <h1 style={{ margin: 0 }}>{t('common:appName')}</h1>
+          <PageTitle>{t('common:appName')}</PageTitle>
           <p style={{ margin: '6px 0 0', opacity: 0.8 }}>{t('cars:subtitle')}</p>
         </div>
       </header>

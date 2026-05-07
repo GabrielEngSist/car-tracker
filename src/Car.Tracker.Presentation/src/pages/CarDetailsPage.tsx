@@ -14,8 +14,7 @@ import {
 import { CostPerKmReportPanel } from '../components/CostPerKmReportPanel'
 import { CarEditModal } from '../components/CarEditModal'
 import { IconDelete, IconEdit, IconRow } from '../components/IconButtons'
-import { LanguageSwitcher } from '../components/LanguageSwitcher'
-import { ThemeToggle } from '../components/ThemeToggle'
+import { PageTitle } from '../components/PageTitle'
 import { useTranslation } from 'react-i18next'
 
 function todayIsoDate(): string {
@@ -383,7 +382,7 @@ export function CarDetailsPage() {
           <div style={{ opacity: 0.8, fontSize: 13 }}>
             <Link to="/">{t('carDetails:backToCars')}</Link>
           </div>
-          <h1 style={{ margin: '8px 0 0' }}>
+          <PageTitle style={{ marginTop: 8 }}>
             {car ? (
               <>
                 {car.name ? `${car.name} · ` : ''}
@@ -392,7 +391,7 @@ export function CarDetailsPage() {
             ) : (
               'Loading…'
             )}
-          </h1>
+          </PageTitle>
           {car?.placa ? (
             <div style={{ marginTop: 6, opacity: 0.85, fontSize: 14 }}>
               {t('carDetails:labels.plate')} {car.placa}
@@ -400,8 +399,6 @@ export function CarDetailsPage() {
           ) : null}
         </div>
         <div className="pageHeaderActions" style={{ alignItems: 'center' }}>
-          <ThemeToggle />
-          <LanguageSwitcher />
           {car ? <div style={{ opacity: 0.85 }}>{car.currentKm.toLocaleString()} km</div> : null}
           {car ? (
             <IconRow>

@@ -5,6 +5,7 @@ import { CostPerKmReportPanel } from '../components/CostPerKmReportPanel'
 import { IconDelete, IconEdit, IconRow, IconToggleActive } from '../components/IconButtons'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { PageTitle } from '../components/PageTitle'
 import { PlanEditModal } from '../components/PlanEditModal'
 import { useTranslation } from 'react-i18next'
 
@@ -88,7 +89,7 @@ export function MaintenancePage() {
           <div style={{ opacity: 0.8, fontSize: 13 }}>
             <Link to={`/cars/${carId}`}>{t('maintenance:backToCar')}</Link>
           </div>
-          <h1 style={{ margin: '8px 0 0' }}>{t('maintenance:title')}</h1>
+          <PageTitle style={{ marginTop: 8 }}>{t('maintenance:title')}</PageTitle>
           <p style={{ margin: '6px 0 0', opacity: 0.8 }}>{t('maintenance:subtitle')}</p>
         </div>
         <div className="pageHeaderActions">

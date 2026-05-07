@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CarApi, type CarDto, type FuelingEntryDto } from '../api'
 import { FuelingCreateModal } from '../components/FuelingCreateModal'
+import { PageTitle } from '../components/PageTitle'
 import { useTranslation } from 'react-i18next'
 
 function carLabel(c: CarDto) {
@@ -53,7 +54,7 @@ export function FuelingsPage() {
     <div className="page">
       <header className="pageHeader">
         <div>
-          <h1 style={{ margin: 0 }}>Abastecimentos</h1>
+          <PageTitle>Abastecimentos</PageTitle>
           <p style={{ margin: '6px 0 0', opacity: 0.75 }}>Lista global de abastecimentos.</p>
         </div>
         <div className="pageHeaderActions">

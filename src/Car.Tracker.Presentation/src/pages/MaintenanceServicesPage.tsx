@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CarApi, type CarDto } from '../api'
+import { PageTitle } from '../components/PageTitle'
 
 function carLabel(c: CarDto) {
   return `${c.name ? `${c.name} · ` : ''}${c.model} (${c.year})`
@@ -21,7 +22,7 @@ export function MaintenanceServicesPage() {
     <div className="page">
       <header className="pageHeader">
         <div>
-          <h1 style={{ margin: 0 }}>Manutenções e serviços</h1>
+          <PageTitle>Manutenções e serviços</PageTitle>
           <p style={{ margin: '6px 0 0', opacity: 0.75 }}>Atalhos para manutenção e lançamentos por carro.</p>
         </div>
       </header>

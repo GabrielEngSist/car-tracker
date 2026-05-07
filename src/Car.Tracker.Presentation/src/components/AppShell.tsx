@@ -1,9 +1,11 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import logoUrl from '../assets/cartracker-logo-transparent.png'
 import { CarCreateModal } from './CarCreateModal'
 import { MaterialIcon } from './MaterialIcon'
 import { FuelingCreateModal } from './FuelingCreateModal'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 function NavItem({ to, label, icon }: { to: string; label: string; icon: React.ReactNode }) {
   return (
@@ -34,19 +36,43 @@ export function AppShell() {
 
   return (
     <div className="appShell">
-      <aside className="sidebar" aria-label="Primary">
-        <div className="sidebarBrand">{t('common:appName')}</div>
-        <nav className="sidebarNav">
-          <NavItem to="/" label={t('common:nav.cars')} icon={<MaterialIcon name="directions_car" size={20} />} />
-          <NavItem to="/fuelings" label={t('common:nav.fuelings')} icon={<MaterialIcon name="local_gas_station" size={20} />} />
-          <NavItem to="/maintenance-services" label={t('common:nav.maintenance')} icon={<MaterialIcon name="build" size={20} />} />
-          <NavItem to="/settings" label={t('common:nav.settings')} icon={<MaterialIcon name="settings" size={20} />} />
-        </nav>
-      </aside>
+      <header className="topHeader">
+        <div className="topHeaderInner">
+          <div className="headerBrand">
+            <img src={logoUrl} alt="" className="headerBrandLogo" width={32} height={32} decoding="async" />
+            <span>{t('common:appName')}</span>
+          </div>
 
-      <main className="shellMain">
-        <Outlet />
-      </main>
+          <div className="headerActions">
+            <LanguageSwitcher />
+            
+            <div className="userProfileMock">
+              <div className="userInfo">
+                <span className="userName">John Doe</span>
+                <span className="userTag">#NA1</span>
+              </div>
+              <div className="userAvatar">
+                <MaterialIcon name="person" size={24} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="pageContainer">
+        <aside className="sidebar" aria-label="Primary">
+          <nav className="sidebarNav">
+            <NavItem to="/" label={t('common:nav.cars')} icon={<MaterialIcon name="directions_car" size={20} />} />
+            <NavItem to="/fuelings" label={t('common:nav.fuelings')} icon={<MaterialIcon name="local_gas_station" size={20} />} />
+            <NavItem to="/maintenance-services" label={t('common:nav.maintenance')} icon={<MaterialIcon name="build" size={20} />} />
+            <NavItem to="/settings" label={t('common:nav.settings')} icon={<MaterialIcon name="settings" size={20} />} />
+          </nav>
+        </aside>
+
+        <main className="shellMain">
+          <Outlet />
+        </main>
+      </div>
 
       {/* Mobile bottom nav */}
       <footer className="bottomNav" aria-label="Primary">

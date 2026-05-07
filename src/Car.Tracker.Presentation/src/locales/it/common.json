@@ -34,5 +34,9 @@
   },
   "placeholders": {
     "dash": "—"
+  },
+  "settings": {
+    "subtitle": "Personalizza aspetto e lingua dell'app.",
+    "appearance": "Aspetto"
   }
 }

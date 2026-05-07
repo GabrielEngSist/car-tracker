@@ -4,6 +4,7 @@ import { CarApi, type CarDto, type FuelingEntryDto } from '../api'
 import { CostPerKmReportPanel } from '../components/CostPerKmReportPanel'
 import { FuelFullTankEfficiencyPanel } from '../components/FuelFullTankEfficiencyPanel'
 import { FuelingCreateModal } from '../components/FuelingCreateModal'
+import { PageTitle } from '../components/PageTitle'
 import { useTranslation } from 'react-i18next'
 
 export function CarFuelingsPage() {
@@ -35,7 +36,7 @@ export function CarFuelingsPage() {
           <div style={{ opacity: 0.8, fontSize: 13 }}>
             <Link to={`/cars/${carId}`}>← Voltar ao veículo</Link>
           </div>
-          <h1 style={{ margin: '8px 0 0' }}>
+          <PageTitle style={{ marginTop: 8 }}>
             Abastecimentos
             {car ? (
               <>
@@ -44,7 +45,7 @@ export function CarFuelingsPage() {
                 {car.model}
               </>
             ) : null}
-          </h1>
+          </PageTitle>
         </div>
         <div className="pageHeaderActions">
           <button type="button" onClick={() => setCreateOpen(true)}>
