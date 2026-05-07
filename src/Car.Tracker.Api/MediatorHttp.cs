@@ -6,17 +6,20 @@ internal static class MediatorHttp
 {
     public static IResult ValidationProblem<T>(ResponseValue<T> response)
     {
-        var dict = ToErrorDictionary(response.Errors);
-        return Results.ValidationProblem(dict);
+        var unexpected = response.Faults.Any(f => string.Equals(f.Code, "UNEXPECTED", StringComparison.Ordinal));
+        var statusCode = unexpected ? StatusCodes.Status500InternalServerError : StatusCodes.Status400BadRequest;
+        var type = unexpected
+            ? "https://tools.ietf.org/html/rfc9110#section-15.6.1"
+            : "https://tools.ietf.org/html/rfc9110#section-15.5.1";
+        var title = unexpected
+            ? "An unexpected error occurred while processing the request."
+            : "Request failed validation or could not be processed.";
+        return Results.Json(
+            new FaultPayload(type, title, response.Faults.Select(f => new FaultDto(f.Code, f.PropertyName, f.Message)).ToArray()),
+            statusCode: statusCode);
     }
 
-    private static Dictionary<string, string[]> ToErrorDictionary(IReadOnlyList<ValidationFailure> errors)
-    {
-        if (errors.Count == 0)
-            return new Dictionary<string, string[]> { ["_error"] = ["Validation failed."] };
+    private sealed record FaultPayload(string Type, string Title, FaultDto[] Faults);
 
-        return errors
-            .GroupBy(e => string.IsNullOrEmpty(e.PropertyName) ? "_error" : e.PropertyName!)
-            .ToDictionary(g => g.Key, g => g.Select(x => x.Message).ToArray());
-    }
+    private sealed record FaultDto(string? Code, string? PropertyName, string Message);
 }

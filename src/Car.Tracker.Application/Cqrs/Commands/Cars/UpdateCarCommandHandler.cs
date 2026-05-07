@@ -1,4 +1,3 @@
-using Car.Tracker.Application.Common;
 using Car.Tracker.Application.Mediator;
 using Car.Tracker.Contracts;
 using Car.Tracker.Domain.Plates;
@@ -8,27 +7,30 @@ namespace Car.Tracker.Application.Cqrs.Commands.Cars;
 
 public sealed class UpdateCarCommandHandler(ITrackerPersistence db) : IRequestHandler<UpdateCarCommand, CarDto?>
 {
-    public async Task<CarDto?> Handle(UpdateCarCommand request, CancellationToken cancellationToken)
+    public async Task<HandlerResult<CarDto?>> Handle(UpdateCarCommand request, CancellationToken cancellationToken)
     {
         var car = await db.GetCarByIdTrackedAsync(request.CarId, cancellationToken).ConfigureAwait(false);
-        if (car is null) return null;
+        if (car is null) return RequestOutcome.Ok<CarDto?>(null);
 
         var r = request.Request;
         if (r.Model is not null)
         {
-            if (string.IsNullOrWhiteSpace(r.Model)) throw new ValidationException("Model cannot be empty.");
+            if (string.IsNullOrWhiteSpace(r.Model))
+                return RequestOutcome.Fail<CarDto?>("MODEL_EMPTY", "Model cannot be empty.", nameof(r.Model));
             car.Model = r.Model.Trim();
         }
 
         if (r.Year is not null)
         {
-            if (r.Year.Value is < 1900 or > 3000) throw new ValidationException("Year is invalid.");
+            if (r.Year.Value is < 1900 or > 3000)
+                return RequestOutcome.Fail<CarDto?>("YEAR_INVALID", "Year is invalid.", nameof(r.Year));
             car.Year = r.Year.Value;
         }
 
         if (r.CurrentKm is not null)
         {
-            if (r.CurrentKm.Value < 0) throw new ValidationException("CurrentKm is invalid.");
+            if (r.CurrentKm.Value < 0)
+                return RequestOutcome.Fail<CarDto?>("CURRENT_KM_INVALID", "CurrentKm is invalid.", nameof(r.CurrentKm));
             car.CurrentKm = r.CurrentKm.Value;
         }
 
@@ -43,12 +45,12 @@ public sealed class UpdateCarCommandHandler(ITrackerPersistence db) : IRequestHa
             {
                 var p = PlacaBrasil.Normalizar(r.Placa);
                 if (!PlacaBrasil.EhValida(p))
-                    throw new ValidationException("Invalid plate format.");
+                    return RequestOutcome.Fail<CarDto?>("PLATE_INVALID", "Invalid plate format.", nameof(r.Placa));
                 car.Placa = p;
             }
         }
 
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return new CarDto(car.Id, car.Model, car.Year, car.CurrentKm, car.Name, car.Placa, car.CreatedAt, car.UpdatedAt);
+        return RequestOutcome.Ok<CarDto?>(new CarDto(car.Id, car.Model, car.Year, car.CurrentKm, car.Name, car.Placa, car.CreatedAt, car.UpdatedAt));
     }
 }

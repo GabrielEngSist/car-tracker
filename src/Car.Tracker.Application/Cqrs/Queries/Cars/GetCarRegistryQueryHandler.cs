@@ -6,12 +6,12 @@ namespace Car.Tracker.Application.Cqrs.Queries.Cars;
 
 public sealed class GetCarRegistryQueryHandler(ITrackerPersistence db) : IRequestHandler<GetCarRegistryQuery, CarRegistryDto?>
 {
-    public async Task<CarRegistryDto?> Handle(GetCarRegistryQuery request, CancellationToken cancellationToken)
+    public async Task<HandlerResult<CarRegistryDto?>> Handle(GetCarRegistryQuery request, CancellationToken cancellationToken)
     {
         var car = await db.GetCarWithConsultasForRegistryAsync(request.CarId, cancellationToken).ConfigureAwait(false);
 
         if (car is null)
-            return null;
+            return RequestOutcome.Ok<CarRegistryDto?>(null);
 
         var expenseEntriesRaw = await db.GetExpenseEntriesForRegistryAsync(request.CarId, cancellationToken).ConfigureAwait(false);
         var expenseEntries = expenseEntriesRaw
@@ -25,11 +25,11 @@ public sealed class GetCarRegistryQueryHandler(ITrackerPersistence db) : IReques
             .ToList();
 
         var carDto = new CarDto(car.Id, car.Model, car.Year, car.CurrentKm, car.Name, car.Placa, car.CreatedAt, car.UpdatedAt);
-        return new CarRegistryDto(
+        return RequestOutcome.Ok<CarRegistryDto?>(new CarRegistryDto(
             carDto,
             car.ConsultaPlaca is null ? null : CarRegistryDtoMapping.ToConsultaPlacaDto(car.ConsultaPlaca),
             car.ConsultaPrecoFipe is null ? null : CarRegistryDtoMapping.ToConsultaPrecoFipeDto(car.ConsultaPrecoFipe),
             expenseEntries,
-            maintenancePlanItems);
+            maintenancePlanItems));
     }
 }

@@ -9,18 +9,16 @@ public sealed class CreateFuelingCommandValidator : IValidator<CreateFuelingComm
         CancellationToken cancellationToken = default)
     {
         var body = request.Body;
-        var failures = new List<ValidationFailure>();
+        var faults = new List<FaultDetail>();
 
         if (body.KmAtFueling < 0)
-            failures.Add(new ValidationFailure(nameof(body.KmAtFueling), "KmAtFueling is invalid."));
+            faults.Add(new FaultDetail("INVALID_KM", nameof(body.KmAtFueling), "KmAtFueling is invalid."));
         if (body.Liters <= 0)
-            failures.Add(new ValidationFailure(nameof(body.Liters), "Liters must be > 0."));
+            faults.Add(new FaultDetail("INVALID_LITERS", nameof(body.Liters), "Liters must be > 0."));
         if (body.TotalPrice < 0)
-            failures.Add(new ValidationFailure(nameof(body.TotalPrice), "TotalPrice is invalid."));
+            faults.Add(new FaultDetail("INVALID_TOTAL_PRICE", nameof(body.TotalPrice), "TotalPrice is invalid."));
 
         return new ValueTask<ValidationResult>(
-            failures.Count == 0
-                ? ValidationResult.Success
-                : ValidationResult.FromFailures(failures));
+            faults.Count == 0 ? ValidationResult.Ok : ValidationResult.FromFaults(faults));
     }
 }

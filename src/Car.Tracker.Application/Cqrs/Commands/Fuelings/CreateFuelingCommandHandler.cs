@@ -7,10 +7,10 @@ namespace Car.Tracker.Application.Cqrs.Commands.Fuelings;
 
 public sealed class CreateFuelingCommandHandler(ITrackerPersistence db) : IRequestHandler<CreateFuelingCommand, FuelingEntryDto?>
 {
-    public async Task<FuelingEntryDto?> Handle(CreateFuelingCommand request, CancellationToken cancellationToken)
+    public async Task<HandlerResult<FuelingEntryDto?>> Handle(CreateFuelingCommand request, CancellationToken cancellationToken)
     {
         var car = await db.GetCarByIdTrackedAsync(request.CarId, cancellationToken).ConfigureAwait(false);
-        if (car is null) return null;
+        if (car is null) return RequestOutcome.Ok<FuelingEntryDto?>(null);
 
         var body = request.Body;
 
@@ -34,7 +34,7 @@ public sealed class CreateFuelingCommandHandler(ITrackerPersistence db) : IReque
 
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return new FuelingEntryDto(
+        return RequestOutcome.Ok<FuelingEntryDto?>(new FuelingEntryDto(
             entry.Id,
             entry.CarId,
             entry.PerformedAt,
@@ -44,6 +44,6 @@ public sealed class CreateFuelingCommandHandler(ITrackerPersistence db) : IReque
             entry.FuelType,
             entry.IsFullTank,
             entry.StationName,
-            entry.Notes);
+            entry.Notes));
     }
 }

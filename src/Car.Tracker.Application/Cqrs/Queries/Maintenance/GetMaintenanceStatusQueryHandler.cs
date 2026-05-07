@@ -6,10 +6,10 @@ namespace Car.Tracker.Application.Cqrs.Queries.Maintenance;
 
 public sealed class GetMaintenanceStatusQueryHandler(ITrackerPersistence db) : IRequestHandler<GetMaintenanceStatusQuery, IReadOnlyList<MaintenanceStatusDto>?>
 {
-    public async Task<IReadOnlyList<MaintenanceStatusDto>?> Handle(GetMaintenanceStatusQuery request, CancellationToken cancellationToken)
+    public async Task<HandlerResult<IReadOnlyList<MaintenanceStatusDto>?>> Handle(GetMaintenanceStatusQuery request, CancellationToken cancellationToken)
     {
         var car = await db.GetCarByIdReadOnlyAsync(request.CarId, cancellationToken).ConfigureAwait(false);
-        if (car is null) return null;
+        if (car is null) return RequestOutcome.Ok<IReadOnlyList<MaintenanceStatusDto>?>(null);
 
         var plans = await db.GetActiveMaintenancePlansOrderedAsync(request.CarId, cancellationToken).ConfigureAwait(false);
 
@@ -57,7 +57,7 @@ public sealed class GetMaintenanceStatusQueryHandler(ITrackerPersistence db) : I
                 overdueByTime || overdueByKm);
         }).ToList();
 
-        return result
+        var ordered = result
             .OrderByDescending(x => x.Overdue)
             .ThenBy(x =>
             {
@@ -68,5 +68,7 @@ public sealed class GetMaintenanceStatusQueryHandler(ITrackerPersistence db) : I
                 return (dateValue.ToDateTime(TimeOnly.MinValue), kmValue);
             })
             .ToList();
+
+        return RequestOutcome.Ok<IReadOnlyList<MaintenanceStatusDto>?>(ordered);
     }
 }

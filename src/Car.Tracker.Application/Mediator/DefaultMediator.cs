@@ -1,11 +1,11 @@
 using System.Reflection;
-using Car.Tracker.Application.Common;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Car.Tracker.Application.Mediator;
 
 /// <summary>
-/// Resolves handlers and <see cref="IPipelineBehavior{TRequest,TResponse}"/> like MediatR; maps <see cref="ValidationException"/> to faulted <see cref="ResponseValue{T}"/>.
+/// Resolves handlers and <see cref="IPipelineBehavior{TRequest,TResponse}"/> (MediatR-style pipeline).
+/// Maps handler faults to <see cref="ResponseValue{T}"/>; unexpected exceptions become a single fault with code <c>UNEXPECTED</c>.
 /// </summary>
 public sealed class DefaultMediator(IServiceProvider serviceProvider) : IMediator
 {
@@ -50,12 +50,23 @@ public sealed class DefaultMediator(IServiceProvider serviceProvider) : IMediato
     {
         try
         {
-            var result = await handler.Handle(request, cancellationToken).ConfigureAwait(false);
-            return ResponseValue<TResponse>.Success(result);
+            var outcome = await handler.Handle(request, cancellationToken).ConfigureAwait(false);
+            if (outcome.IsFailure)
+                return ResponseValue<TResponse>.Failure(outcome.Faults);
+
+            return ResponseValue<TResponse>.Success(outcome.Value!);
         }
-        catch (ValidationException ex)
+        catch (OperationCanceledException)
         {
-            return ResponseValue<TResponse>.Failure([new ValidationFailure(null, ex.Message)]);
+            throw;
+        }
+        catch (Exception ex)
+        {
+            return ResponseValue<TResponse>.Failure(
+                new FaultDetail(
+                    "UNEXPECTED",
+                    null,
+                    string.IsNullOrWhiteSpace(ex.Message) ? "An unexpected error occurred." : ex.Message));
         }
     }
 }

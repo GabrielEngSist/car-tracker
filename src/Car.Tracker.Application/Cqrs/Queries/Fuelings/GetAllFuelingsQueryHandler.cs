@@ -6,10 +6,10 @@ namespace Car.Tracker.Application.Cqrs.Queries.Fuelings;
 
 public sealed class GetAllFuelingsQueryHandler(ITrackerPersistence db) : IRequestHandler<GetAllFuelingsQuery, IReadOnlyList<FuelingEntryDto>>
 {
-    public async Task<IReadOnlyList<FuelingEntryDto>> Handle(GetAllFuelingsQuery request, CancellationToken cancellationToken)
+    public async Task<HandlerResult<IReadOnlyList<FuelingEntryDto>>> Handle(GetAllFuelingsQuery request, CancellationToken cancellationToken)
     {
         var list = await db.GetAllFuelingsOrderedAsync(cancellationToken).ConfigureAwait(false);
-        return list
+        var dtos = list
             .Select(x => new FuelingEntryDto(
                 x.Id,
                 x.CarId,
@@ -22,5 +22,6 @@ public sealed class GetAllFuelingsQueryHandler(ITrackerPersistence db) : IReques
                 x.StationName,
                 x.Notes))
             .ToList();
+        return RequestOutcome.Ok<IReadOnlyList<FuelingEntryDto>>(dtos);
     }
 }

@@ -1,5 +1,4 @@
 using System.Net.Http;
-using Car.Tracker.Application.Common;
 using Car.Tracker.Application.Mediator;
 using Car.Tracker.Contracts;
 using Car.Tracker.Domain.Entities;
@@ -15,20 +14,20 @@ public sealed class CreateCarCommandHandler(
     IConsultarPlacaPort consultarPlaca,
     IConsultarPrecoFipePort consultarPrecoFipe) : IRequestHandler<CreateCarCommand, CreateCarOutcome>
 {
-    public async Task<CreateCarOutcome> Handle(CreateCarCommand request, CancellationToken cancellationToken)
+    public async Task<HandlerResult<CreateCarOutcome>> Handle(CreateCarCommand request, CancellationToken cancellationToken)
     {
         var r = request.Request;
         if (r.CurrentKm < 0)
-            return new CreateCarOutcome(CreateCarStatus.BadRequest, null, "CurrentKm is invalid.");
+            return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadRequest, null, "CurrentKm is invalid."));
 
         if (r.AutoBuscarDados)
         {
             if (string.IsNullOrWhiteSpace(r.Placa))
-                return new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Placa is required for automatic registration.");
+                return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Placa is required for automatic registration."));
 
             var placaNorm = PlacaBrasil.Normalizar(r.Placa);
             if (!PlacaBrasil.EhValida(placaNorm))
-                return new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Invalid plate format (use Mercosul or old Brazilian format).");
+                return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Invalid plate format (use Mercosul or old Brazilian format)."));
 
             try
             {
@@ -36,10 +35,10 @@ public sealed class CreateCarCommandHandler(
                 var rFipe = await consultarPrecoFipe.ConsultarPorPlacaAsync(placaNorm, cancellationToken).ConfigureAwait(false);
 
                 if (rPlaca is null || !string.Equals(rPlaca.Status, "ok", StringComparison.OrdinalIgnoreCase))
-                    return new CreateCarOutcome(CreateCarStatus.BadRequest, null, $"consultarPlaca failed: {rPlaca?.Mensagem ?? "empty response"}");
+                    return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadRequest, null, $"consultarPlaca failed: {rPlaca?.Mensagem ?? "empty response"}"));
 
                 if (rFipe is null || !string.Equals(rFipe.Status, "ok", StringComparison.OrdinalIgnoreCase))
-                    return new CreateCarOutcome(CreateCarStatus.BadRequest, null, $"consultarPrecoFipe failed: {rFipe?.Mensagem ?? "empty response"}");
+                    return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadRequest, null, $"consultarPrecoFipe failed: {rFipe?.Mensagem ?? "empty response"}"));
 
                 var car = new CarEntity { Model = "temp", Year = 2000, CurrentKm = r.CurrentKm };
                 ConsultarPlacaMapper.PreencherCarro(car, rPlaca, r.CurrentKm, r.Name, placaNorm);
@@ -50,25 +49,25 @@ public sealed class CreateCarCommandHandler(
                 await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
                 var dto = new CarDto(car.Id, car.Model, car.Year, car.CurrentKm, car.Name, car.Placa, car.CreatedAt, car.UpdatedAt);
-                return new CreateCarOutcome(CreateCarStatus.Created, dto, null);
+                return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.Created, dto, null));
             }
             catch (HttpRequestException ex)
             {
-                return new CreateCarOutcome(CreateCarStatus.BadGateway, null, ex.Message);
+                return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadGateway, null, ex.Message));
             }
         }
 
         if (string.IsNullOrWhiteSpace(r.Model))
-            return new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Model is required.");
+            return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Model is required."));
         if (r.Year is null or < 1900 or > 3000)
-            return new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Year is invalid.");
+            return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Year is invalid."));
 
         string? placaManual = null;
         if (!string.IsNullOrWhiteSpace(r.Placa))
         {
             placaManual = PlacaBrasil.Normalizar(r.Placa);
             if (!PlacaBrasil.EhValida(placaManual))
-                return new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Invalid plate format.");
+                return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.BadRequest, null, "Invalid plate format."));
         }
 
         var carManual = new CarEntity
@@ -83,6 +82,6 @@ public sealed class CreateCarCommandHandler(
         db.AddCar(carManual);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         var created = new CarDto(carManual.Id, carManual.Model, carManual.Year, carManual.CurrentKm, carManual.Name, carManual.Placa, carManual.CreatedAt, carManual.UpdatedAt);
-        return new CreateCarOutcome(CreateCarStatus.Created, created, null);
+        return RequestOutcome.Ok(new CreateCarOutcome(CreateCarStatus.Created, created, null));
     }
 }

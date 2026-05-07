@@ -1,4 +1,3 @@
-using Car.Tracker.Application.Common;
 using Car.Tracker.Application.Mediator;
 using Car.Tracker.Contracts;
 using Car.Tracker.Domain.Entities;
@@ -8,15 +7,18 @@ namespace Car.Tracker.Application.Cqrs.Commands.ExpenseEntries;
 
 public sealed class CreateExpenseEntryCommandHandler(ITrackerPersistence db) : IRequestHandler<CreateExpenseEntryCommand, ExpenseEntryDto?>
 {
-    public async Task<ExpenseEntryDto?> Handle(CreateExpenseEntryCommand request, CancellationToken cancellationToken)
+    public async Task<HandlerResult<ExpenseEntryDto?>> Handle(CreateExpenseEntryCommand request, CancellationToken cancellationToken)
     {
         var car = await db.GetCarByIdTrackedAsync(request.CarId, cancellationToken).ConfigureAwait(false);
-        if (car is null) return null;
+        if (car is null) return RequestOutcome.Ok<ExpenseEntryDto?>(null);
 
         var body = request.Body;
-        if (string.IsNullOrWhiteSpace(body.Title)) throw new ValidationException("Title is required.");
-        if (body.Price < 0) throw new ValidationException("Price is invalid.");
-        if (body.KmAtService < 0) throw new ValidationException("KmAtService is invalid.");
+        if (string.IsNullOrWhiteSpace(body.Title))
+            return RequestOutcome.Fail<ExpenseEntryDto?>("TITLE_REQUIRED", "Title is required.", nameof(body.Title));
+        if (body.Price < 0)
+            return RequestOutcome.Fail<ExpenseEntryDto?>("PRICE_INVALID", "Price is invalid.", nameof(body.Price));
+        if (body.KmAtService < 0)
+            return RequestOutcome.Fail<ExpenseEntryDto?>("KM_AT_SERVICE_INVALID", "KmAtService is invalid.", nameof(body.KmAtService));
 
         var entry = new ExpenseEntry
         {
@@ -34,7 +36,7 @@ public sealed class CreateExpenseEntryCommandHandler(ITrackerPersistence db) : I
         db.AddExpenseEntry(entry);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return new ExpenseEntryDto(
-            entry.Id, entry.CarId, entry.Type, entry.Title, entry.Price, entry.SupplierBrand, entry.ProductModel, entry.PerformedAt, entry.KmAtService, entry.Notes);
+        return RequestOutcome.Ok<ExpenseEntryDto?>(new ExpenseEntryDto(
+            entry.Id, entry.CarId, entry.Type, entry.Title, entry.Price, entry.SupplierBrand, entry.ProductModel, entry.PerformedAt, entry.KmAtService, entry.Notes));
     }
 }

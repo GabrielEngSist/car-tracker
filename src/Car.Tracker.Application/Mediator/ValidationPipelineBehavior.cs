@@ -17,7 +17,7 @@ public sealed class ValidationPipelineBehavior<TRequest, TResponse>(IServiceProv
         {
             var result = await validator.ValidateAsync(request, cancellationToken).ConfigureAwait(false);
             if (!result.IsValid)
-                return ResponseValue<TResponse>.Failure(result.Errors);
+                return ResponseValue<TResponse>.Failure(result.Faults);
         }
 
         return await next().ConfigureAwait(false);

@@ -2,26 +2,26 @@ namespace Car.Tracker.Application.Mediator;
 
 /// <summary>
 /// Discriminated result of <see cref="IMediator.SendAsync{TResponse}"/> —
-/// success carries the handler response; failure carries validation errors (no exceptions for expected cases).
+/// success carries the handler response; failure carries structured faults (no exceptions for expected cases).
 /// </summary>
 public readonly struct ResponseValue<T>
 {
     public bool IsSuccess { get; }
     public bool IsFailure => !IsSuccess;
     public T? Value { get; }
-    public IReadOnlyList<ValidationFailure> Errors { get; }
+    public IReadOnlyList<FaultDetail> Faults { get; }
 
-    private ResponseValue(bool isSuccess, T? value, IReadOnlyList<ValidationFailure> errors)
+    private ResponseValue(bool isSuccess, T? value, IReadOnlyList<FaultDetail> faults)
     {
         IsSuccess = isSuccess;
         Value = value;
-        Errors = errors;
+        Faults = faults;
     }
 
     public static ResponseValue<T> Success(T value) => new(true, value, []);
 
-    public static ResponseValue<T> Failure(IReadOnlyList<ValidationFailure> errors) => new(false, default, errors);
+    public static ResponseValue<T> Failure(IReadOnlyList<FaultDetail> faults) => new(false, default, faults);
 
-    public static ResponseValue<T> Failure(params ValidationFailure[] errors) =>
-        Failure((IReadOnlyList<ValidationFailure>)errors);
+    public static ResponseValue<T> Failure(params FaultDetail[] faults) =>
+        Failure((IReadOnlyList<FaultDetail>)faults);
 }
