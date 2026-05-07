@@ -1,8 +1,8 @@
-using Car.Tracker.Api.Domain;
 using Car.Tracker.Application.Abstractions;
+using Car.Tracker.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Car.Tracker.Api.Data;
+namespace Car.Tracker.Infrastructure.Data;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
 {

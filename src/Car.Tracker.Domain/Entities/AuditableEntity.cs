@@ -1,4 +1,4 @@
-namespace Car.Tracker.Api.Domain;
+namespace Car.Tracker.Domain.Entities;
 
 public abstract class AuditableEntity
 {

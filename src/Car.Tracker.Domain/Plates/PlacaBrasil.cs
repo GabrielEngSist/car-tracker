@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Car.Tracker.Api.Domain;
+namespace Car.Tracker.Domain.Plates;
 
 /// <summary>Validação e normalização de placas no padrão brasileiro (Mercosul ou antigo).</summary>
 public static partial class PlacaBrasil

@@ -1,4 +1,4 @@
-namespace Car.Tracker.Api.Domain;
+namespace Car.Tracker.Domain.Entities;
 
 /// <summary>Tipos de combustível aceitos pelo sistema.</summary>
 public enum FuelType

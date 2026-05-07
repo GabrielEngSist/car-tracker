@@ -1,4 +1,4 @@
-namespace Car.Tracker.Api.Domain;
+namespace Car.Tracker.Domain.Entities;
 
 /// <summary>Resultado persistido da API GET consultarPlaca.</summary>
 public sealed class ConsultaPlaca : AuditableEntity

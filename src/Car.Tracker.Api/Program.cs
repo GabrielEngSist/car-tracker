@@ -1,7 +1,9 @@
-using Car.Tracker.Api.Api;
+using Car.Tracker.Domain.Reports;
 using Car.Tracker.Api.Configuration;
 using Car.Tracker.Api.ConsultarPlacaModels;
-using Car.Tracker.Api.Domain;
+using Car.Tracker.Domain.Entities;
+using Car.Tracker.Domain.Plates;
+using Car.Tracker.Application;
 using Car.Tracker.Application.Services;
 using Car.Tracker.Contracts;
 using Car.Tracker.Infrastructure;
@@ -46,8 +48,7 @@ builder.Services.AddHttpClient<IConsultarPrecoFipeClient, ConsultarPrecoFipeHttp
 var dbSettings = builder.Configuration.GetSection(DatabaseSettings.SectionName).Get<DatabaseSettings>() ?? new DatabaseSettings();
 var connectionString = $"Host={dbSettings.Host};Database={dbSettings.Database};Username={dbSettings.Username};Password={dbSettings.Password};Port={dbSettings.Port};SSL Mode=VerifyFull;Channel Binding=Require";
 builder.Services.AddInfrastructure(connectionString);
-
-builder.Services.AddScoped<ICarTrackerService, CarTrackerService>();
+builder.Services.AddApplication();
 
 var app = builder.Build();
 

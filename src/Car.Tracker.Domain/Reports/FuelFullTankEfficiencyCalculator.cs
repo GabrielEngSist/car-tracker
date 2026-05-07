@@ -1,6 +1,6 @@
-using Car.Tracker.Api.Domain;
+using Car.Tracker.Domain.Entities;
 
-namespace Car.Tracker.Api.Api;
+namespace Car.Tracker.Domain.Reports;
 
 public static class FuelFullTankEfficiencyCalculator
 {

@@ -1,4 +1,4 @@
-namespace Car.Tracker.Api.Domain;
+namespace Car.Tracker.Domain.Entities;
 
 /// <summary>Resultado persistido da API GET consultarPrecoFipe (cabeçalho + veículo + técnico + carga).</summary>
 public sealed class ConsultaPrecoFipe : AuditableEntity

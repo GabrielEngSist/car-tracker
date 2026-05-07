@@ -1,4 +1,4 @@
-using Car.Tracker.Api.Domain;
+using Car.Tracker.Domain.Entities;
 
 namespace Car.Tracker.Contracts;
 

@@ -1,4 +1,4 @@
-using Car.Tracker.Api.Data;
+using Car.Tracker.Infrastructure.Data;
 using Car.Tracker.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

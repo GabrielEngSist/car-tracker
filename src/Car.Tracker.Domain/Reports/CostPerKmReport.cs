@@ -1,4 +1,4 @@
-namespace Car.Tracker.Api.Api;
+namespace Car.Tracker.Domain.Reports;
 
 /// <summary>Agregação por período de calendário (janelas fixas a partir da data de referência).</summary>
 public enum PeriodAggregator

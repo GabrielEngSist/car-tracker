@@ -1,5 +1,5 @@
-using Car.Tracker.Api.Api;
-using Car.Tracker.Api.Domain;
+using Car.Tracker.Domain.Reports;
+using Car.Tracker.Domain.Entities;
 using Car.Tracker.Contracts;
 
 namespace Car.Tracker.Application.Services;

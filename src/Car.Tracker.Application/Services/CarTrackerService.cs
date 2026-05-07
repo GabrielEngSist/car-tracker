@@ -1,5 +1,6 @@
-using Car.Tracker.Api.Api;
-using Car.Tracker.Api.Domain;
+using Car.Tracker.Domain.Reports;
+using Car.Tracker.Domain.Entities;
+using Car.Tracker.Domain.Plates;
 using Car.Tracker.Application.Abstractions;
 using Car.Tracker.Contracts;
 using Microsoft.EntityFrameworkCore;

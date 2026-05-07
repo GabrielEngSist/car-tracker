@@ -23,13 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Domain + data + report logic live in other layers; keep API project thin -->
-    <Compile Remove="Api\\**\\*.cs" />
-    <Compile Remove="Data\\**\\*.cs" />
-    <Compile Remove="Domain\\**\\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules/**" />
   </ItemGroup>

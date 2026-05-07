@@ -20,9 +20,4 @@
     <ProjectReference Include="..\\Car.Tracker.Application\\Car.Tracker.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Keep existing EF migration history, but compile it as Infrastructure -->
-    <Compile Include="..\\Car.Tracker.Api\\Data\\Migrations\\**\\*.cs" Link="Data\\Migrations\\%(RecursiveDir)%(Filename)%(Extension)" />
-  </ItemGroup>
-
 </Project>

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Car.Tracker.Api.Data.Migrations
+namespace Car.Tracker.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
     public partial class NormalizeFuelingFuelTypeEnum : Migration

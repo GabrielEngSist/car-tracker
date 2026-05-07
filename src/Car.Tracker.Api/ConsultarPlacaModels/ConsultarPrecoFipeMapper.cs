@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Car.Tracker.Api.Domain;
+using Car.Tracker.Domain.Entities;
 
 namespace Car.Tracker.Api.ConsultarPlacaModels;
 
