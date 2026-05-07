@@ -1,4 +1,3 @@
-using Car.Tracker.Application.Common;
 using Car.Tracker.Application.Mediator;
 using Car.Tracker.Contracts;
 using Car.Tracker.Domain.Entities;
@@ -14,9 +13,6 @@ public sealed class CreateFuelingCommandHandler(ITrackerPersistence db) : IReque
         if (car is null) return null;
 
         var body = request.Body;
-        if (body.KmAtFueling < 0) throw new ValidationException("KmAtFueling is invalid.");
-        if (body.Liters <= 0) throw new ValidationException("Liters must be > 0.");
-        if (body.TotalPrice < 0) throw new ValidationException("TotalPrice is invalid.");
 
         var entry = new FuelingEntry
         {

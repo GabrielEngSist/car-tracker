@@ -1,38 +1,61 @@
 using System.Reflection;
+using Car.Tracker.Application.Common;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Car.Tracker.Application.Mediator;
 
-/// <summary>Resolves <see cref="IRequestHandler{TRequest,TResponse}"/> from DI and dispatches (single-handler-per-request).</summary>
+/// <summary>
+/// Resolves handlers and <see cref="IPipelineBehavior{TRequest,TResponse}"/> like MediatR; maps <see cref="ValidationException"/> to faulted <see cref="ResponseValue{T}"/>.
+/// </summary>
 public sealed class DefaultMediator(IServiceProvider serviceProvider) : IMediator
 {
-    public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    private static readonly MethodInfo DispatchAsyncImplInfo =
+        typeof(DefaultMediator).GetMethod(nameof(DispatchAsyncImpl), BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+    public Task<ResponseValue<TResponse>> SendAsync<TResponse>(
+        IRequest<TResponse> request,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
         var requestType = request.GetType();
-        var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
-        var handler = serviceProvider.GetRequiredService(handlerType);
-
-        var handle = handler.GetType().GetMethod(
-            "Handle",
-            BindingFlags.Public | BindingFlags.Instance,
-            null,
-            [requestType, typeof(CancellationToken)],
-            null);
-        if (handle is null)
-            throw new InvalidOperationException($"Handle method not found on {handler.GetType().Name}.");
-
-        var task = (Task)handle.Invoke(handler, [request, cancellationToken])!;
-        return CastTask<TResponse>(task);
+        var closed = DispatchAsyncImplInfo.MakeGenericMethod(requestType, typeof(TResponse));
+        return (Task<ResponseValue<TResponse>>)closed.Invoke(this, [request, cancellationToken])!;
     }
 
-    private static async Task<TResponse> CastTask<TResponse>(Task task)
+    private async Task<ResponseValue<TResponse>> DispatchAsyncImpl<TRequest, TResponse>(
+        TRequest request,
+        CancellationToken cancellationToken)
+        where TRequest : IRequest<TResponse>
     {
-        await task.ConfigureAwait(false);
-        var taskType = task.GetType();
-        if (!taskType.IsGenericType || taskType.GetGenericTypeDefinition() != typeof(Task<>))
-            throw new InvalidOperationException("Handler must return Task<TResponse>.");
+        var handler = serviceProvider.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
+        var behaviors = serviceProvider.GetServices<IPipelineBehavior<TRequest, TResponse>>().ToList();
 
-        return (TResponse)taskType.GetProperty(nameof(Task<object>.Result))!.GetValue(task)!;
+        Func<Task<ResponseValue<TResponse>>> next = () => InvokeHandler(handler, request, cancellationToken);
+
+        for (var i = behaviors.Count - 1; i >= 0; i--)
+        {
+            var behavior = behaviors[i];
+            var inner = next;
+            next = () => behavior.Handle(request, inner, cancellationToken);
+        }
+
+        return await next().ConfigureAwait(false);
+    }
+
+    private static async Task<ResponseValue<TResponse>> InvokeHandler<TRequest, TResponse>(
+        IRequestHandler<TRequest, TResponse> handler,
+        TRequest request,
+        CancellationToken cancellationToken)
+        where TRequest : IRequest<TResponse>
+    {
+        try
+        {
+            var result = await handler.Handle(request, cancellationToken).ConfigureAwait(false);
+            return ResponseValue<TResponse>.Success(result);
+        }
+        catch (ValidationException ex)
+        {
+            return ResponseValue<TResponse>.Failure([new ValidationFailure(null, ex.Message)]);
+        }
     }
 }

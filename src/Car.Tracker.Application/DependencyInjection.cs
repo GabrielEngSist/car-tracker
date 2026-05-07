@@ -19,6 +19,9 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<IMediator, DefaultMediator>();
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+
+        services.AddScoped<IValidator<CreateFuelingCommand>, CreateFuelingCommandValidator>();
 
         services.AddScoped<IRequestHandler<GetCarsQuery, IReadOnlyList<CarDto>>, GetCarsQueryHandler>();
         services.AddScoped<IRequestHandler<GetCarByIdQuery, CarDto?>, GetCarByIdQueryHandler>();
