@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Car.Tracker.Application.Mediator;
@@ -9,20 +8,15 @@ namespace Car.Tracker.Application.Mediator;
 /// </summary>
 public sealed class DefaultMediator(IServiceProvider serviceProvider) : IMediator
 {
-    private static readonly MethodInfo DispatchAsyncImplInfo =
-        typeof(DefaultMediator).GetMethod(nameof(DispatchAsyncImpl), BindingFlags.Instance | BindingFlags.NonPublic)!;
-
     public Task<ResponseValue<TResponse>> SendAsync<TResponse>(
         IRequest<TResponse> request,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
-        var requestType = request.GetType();
-        var closed = DispatchAsyncImplInfo.MakeGenericMethod(requestType, typeof(TResponse));
-        return (Task<ResponseValue<TResponse>>)closed.Invoke(this, [request, cancellationToken])!;
+        return request.DispatchAsync(this, cancellationToken);
     }
 
-    private async Task<ResponseValue<TResponse>> DispatchAsyncImpl<TRequest, TResponse>(
+    public async Task<ResponseValue<TResponse>> SendAsync<TRequest, TResponse>(
         TRequest request,
         CancellationToken cancellationToken)
         where TRequest : IRequest<TResponse>
