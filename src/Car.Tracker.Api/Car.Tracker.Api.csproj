@@ -11,14 +11,22 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
-    <PackageReference Include="Npgsql" Version="10.0.2" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\\Car.Tracker.Application\\Car.Tracker.Application.csproj" />
+    <ProjectReference Include="..\\Car.Tracker.Contracts\\Car.Tracker.Contracts.csproj" />
+    <ProjectReference Include="..\\Car.Tracker.Domain\\Car.Tracker.Domain.csproj" />
+    <ProjectReference Include="..\\Car.Tracker.Infrastructure\\Car.Tracker.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Domain + data + report logic live in other layers; keep API project thin -->
+    <Compile Remove="Api\\**\\*.cs" />
+    <Compile Remove="Data\\**\\*.cs" />
+    <Compile Remove="Domain\\**\\*.cs" />
   </ItemGroup>
 
   <ItemGroup>

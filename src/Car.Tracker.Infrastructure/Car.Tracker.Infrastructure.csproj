@@ -6,4 +6,23 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\\Car.Tracker.Domain\\Car.Tracker.Domain.csproj" />
+    <ProjectReference Include="..\\Car.Tracker.Application\\Car.Tracker.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Keep existing EF migration history, but compile it as Infrastructure -->
+    <Compile Include="..\\Car.Tracker.Api\\Data\\Migrations\\**\\*.cs" Link="Data\\Migrations\\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 using Car.Tracker.Api.Domain;
+using Car.Tracker.Contracts;
 
 namespace Car.Tracker.Api.Api;
 
