@@ -67,7 +67,7 @@
       "type": "process",
       "args": [
         "test",
-        "${workspaceFolder}/src/Car.Tracker.Tests/Car.Tracker.Tests.csproj",
+        "${workspaceFolder}/src/Car.Tracker.slnx",
         "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura -v"
       ],
       "group": "test",
