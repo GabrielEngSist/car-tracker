@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/consultarPrecoFipe"
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "status": "ok",
+      "mensagem": "ok",
+      "dados": {
+        "informacoes_fipe": [
+          {
+            "codigo_fipe": "000000-0",
+            "modelo_versao": "COROLLA 2.0",
+            "preco": "R$ 100.000,00",
+            "mes_referencia": "2026-05",
+            "historico": { "2026_05": "R$ 100.000,00" }
+          }
+        ]
+      },
+      "request": { "placa": "{{request.query.placa}}" }
+    }
+  }
+}
+

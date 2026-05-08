@@ -5,4 +5,5 @@
   <Project Path="Car.Tracker.Domain/Car.Tracker.Domain.csproj" />
   <Project Path="Car.Tracker.Infrastructure/Car.Tracker.Infrastructure.csproj" />
   <Project Path="Car.Tracker.Tests/Car.Tracker.Tests.csproj" />
+  <Project Path="Car.Tracker.IntegrationTests/Car.Tracker.IntegrationTests.csproj" />
 </Solution>

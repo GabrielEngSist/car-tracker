@@ -25,8 +25,15 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-var dbSettings = builder.Configuration.GetSection(DatabaseSettings.SectionName).Get<DatabaseSettings>() ?? new DatabaseSettings();
-var connectionString = $"Host={dbSettings.Host};Database={dbSettings.Database};Username={dbSettings.Username};Password={dbSettings.Password};Port={dbSettings.Port};SSL Mode=VerifyFull;Channel Binding=Require";
+var connectionString =
+    builder.Configuration.GetConnectionString("CarTracker")
+    ?? builder.Configuration["CarTracker:ConnectionString"];
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    var dbSettings = builder.Configuration.GetSection(DatabaseSettings.SectionName).Get<DatabaseSettings>() ?? new DatabaseSettings();
+    connectionString = $"Host={dbSettings.Host};Database={dbSettings.Database};Username={dbSettings.Username};Password={dbSettings.Password};Port={dbSettings.Port};SSL Mode=VerifyFull;Channel Binding=Require";
+}
 
 builder.Services.AddConsultarPlacaIntegration(builder.Configuration);
 builder.Services.AddInfrastructure(connectionString);

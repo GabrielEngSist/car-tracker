@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/consultarPlaca"
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "status": "ok",
+      "mensagem": "ok",
+      "dados": {
+        "informacoes_veiculo": {
+          "dados_veiculo": {
+            "placa": "{{request.query.placa}}",
+            "modelo": "COROLLA",
+            "ano_modelo": "2018"
+          }
+        }
+      },
+      "request": { "placa": "{{request.query.placa}}" }
+    }
+  }
+}
+

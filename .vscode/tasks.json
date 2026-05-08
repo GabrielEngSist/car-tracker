@@ -54,9 +54,29 @@
     },
     {
       "label": "dev:all",
-      "dependsOn": ["frontend:dev", "build"],
+      "dependsOn": [
+        "frontend:dev",
+        "build"
+      ],
       "dependsOrder": "parallel",
       "problemMatcher": []
+    },
+    {
+      "label": "test:unit",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/src/Car.Tracker.Tests/Car.Tracker.Tests.csproj",
+        "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura -v"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": "$msCompile"
     }
   ]
 }
