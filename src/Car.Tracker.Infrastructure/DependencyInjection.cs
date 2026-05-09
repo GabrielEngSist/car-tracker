@@ -11,9 +11,9 @@ namespace Car.Tracker.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, Func<IConfiguration, string> connectionStringResolver, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionStringResolver(configuration)));
         services.AddScoped<ITrackerPersistence, EfTrackerPersistence>();
         return services;
     }

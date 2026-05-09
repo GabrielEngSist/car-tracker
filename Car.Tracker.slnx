@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="src/Car.Tracker.Api/Car.Tracker.Api.csproj" />
+  <Project Path="src/Car.Tracker.Application/Car.Tracker.Application.csproj" />
+  <Project Path="src/Car.Tracker.Contracts/Car.Tracker.Contracts.csproj" />
+  <Project Path="src/Car.Tracker.Domain/Car.Tracker.Domain.csproj" />
+  <Project Path="src/Car.Tracker.Infrastructure/Car.Tracker.Infrastructure.csproj" />
+  <Project Path="src/Car.Tracker.Tests/Car.Tracker.Tests.csproj" />
+  <Project Path="src/Car.Tracker.IntegrationTests/Car.Tracker.IntegrationTests.csproj" />
+</Solution>

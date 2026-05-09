@@ -27,11 +27,6 @@
       "preLaunchTask": "frontend:dev",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/src/Car.Tracker.Presentation/src"
-    },
-    {
-      "name": "Car.Tracker.Api (attach)",
-      "type": "coreclr",
-      "request": "attach"
     }
   ]
 }
