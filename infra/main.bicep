@@ -1,139 +1,153 @@
-// Resource-group-scoped deployment for Car.Tracker.Api Key Vault + UAMI.
-// Deploy with:
-//   az deployment group create -g <rg> -f infra/main.bicep \
-//     -p @infra/main.parameters.json \
-//     -p deployerObjectId=$(az ad signed-in-user show --query id -o tsv) \
-//     -p carTrackerDbPassword='...' \
-//     -p consultarPlacaEmail='...' \
-//     -p consultarPlacaApiKey='...'
+// AZD-shaped orchestrator for Car.Tracker.Api.
+// Provisions a fresh resource group and wires all child modules (monitoring, identity, key vault,
+// ACR, Container Apps environment, the app itself, and the AcrPull role assignment).
+//
+// Run with:
+//   azd up
+// or, for IaC-only:
+//   az deployment sub create -l <region> -f infra/main.bicep -p @infra/main.parameters.json
 
-targetScope = 'resourceGroup'
+targetScope = 'subscription'
 
-@description('Azure region for all resources. Defaults to the resource group location.')
-param location string = resourceGroup().location
+@minLength(1)
+@maxLength(64)
+@description('AZD environment name. Used as a suffix on resource names and as the resource group name.')
+param environmentName string
 
-@description('Short environment tag, e.g. dev / stg / prod. Used in resource names.')
-@allowed([
-  'dev'
-  'stg'
-  'prod'
-])
-param env string = 'dev'
+@minLength(1)
+@description('Azure region for all resources.')
+param location string
 
-@description('Globally-unique Key Vault name (3-24 lowercase alphanumeric/hyphen).')
-@minLength(3)
-@maxLength(24)
-param keyVaultName string
+@description('Object ID of the deployer (user or service principal). Granted Key Vault Secrets User so DefaultAzureCredential works locally. Leave empty to skip the assignment.')
+param deployerObjectId string = ''
 
-@description('User-Assigned Managed Identity name attached to the future app host.')
-param uamiName string = 'id-cartracker-${env}'
+@description('Neon Postgres host for the prod environment.')
+param carTrackerHost string = 'ep-sweet-butterfly-amaxaspp-pooler.c-5.us-east-1.aws.neon.tech'
 
-@description('Object (principal) ID of the user/group running deployment. Granted Key Vault Secrets User so DefaultAzureCredential works locally after az login.')
-param deployerObjectId string
+@description('Neon Postgres database name.')
+param carTrackerDatabase string = 'car_tracker'
 
-@secure()
-@description('Neon Postgres password for the CarTracker database.')
-param carTrackerDbPassword string
+@description('Neon Postgres username.')
+param carTrackerUsername string = 'neondb_owner'
 
-@secure()
-@description('Email used as the username in ConsultarPlaca Basic auth.')
-param consultarPlacaEmail string
+@description('Neon Postgres port.')
+param carTrackerPort string = '5432'
 
-@secure()
-@description('API key used as the password in ConsultarPlaca Basic auth.')
-param consultarPlacaApiKey string
+@description('ConsultarPlaca base URL.')
+param consultarPlacaUrl string = 'https://api.consultarplaca.com.br/v2'
 
-// Built-in role: Key Vault Secrets User
-// https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#key-vault-secrets-user
-var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
+// Short hash that makes resource names unique within a tenant while staying deterministic per env.
+var resourceSuffix = take(uniqueString(subscription().id, environmentName, location), 6)
+var tags = {
+  'azd-env-name': environmentName
+  app: 'car-tracker'
+}
 
-resource uami 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: uamiName
+resource rg 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+  name: 'rg-${environmentName}'
   location: location
-  tags: {
-    app: 'car-tracker'
-    env: env
+  tags: tags
+}
+
+module monitoring './modules/monitoring.bicep' = {
+  name: 'monitoring'
+  scope: rg
+  params: {
+    name: '${environmentName}-${resourceSuffix}'
+    location: location
+    tags: tags
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2024-04-01-preview' = {
-  name: keyVaultName
-  location: location
-  tags: {
-    app: 'car-tracker'
-    env: env
-  }
-  properties: {
-    tenantId: subscription().tenantId
-    sku: {
-      family: 'A'
-      name: 'standard'
-    }
-    enableRbacAuthorization: true
-    enableSoftDelete: true
-    softDeleteRetentionInDays: 7
-    enablePurgeProtection: true
-    publicNetworkAccess: 'Enabled'
-    networkAcls: {
-      bypass: 'AzureServices'
-      defaultAction: 'Allow'
-    }
+module identity './modules/identity.bicep' = {
+  name: 'identity'
+  scope: rg
+  params: {
+    name: 'id-cartracker-${resourceSuffix}'
+    location: location
+    tags: tags
   }
 }
 
-resource uamiSecretsUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, uami.id, keyVaultSecretsUserRoleId)
-  scope: keyVault
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
-    principalId: uami.properties.principalId
-    principalType: 'ServicePrincipal'
+module keyvault './modules/keyvault.bicep' = {
+  name: 'keyvault'
+  scope: rg
+  params: {
+    // Key Vault names: 3-24 chars, alphanumeric + hyphens, globally unique.
+    name: take('kv-ct-${resourceSuffix}', 24)
+    location: location
+    tags: tags
+    appPrincipalId: identity.outputs.principalId
+    deployerObjectId: deployerObjectId
   }
 }
 
-resource deployerSecretsUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, deployerObjectId, keyVaultSecretsUserRoleId)
-  scope: keyVault
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
-    principalId: deployerObjectId
-    // No principalType: the deployer may be a User or Group; letting ARM infer avoids errors when running from a non-User principal.
+module registry './modules/registry.bicep' = {
+  name: 'registry'
+  scope: rg
+  params: {
+    // ACR names: alphanumeric only, 5-50 chars.
+    name: replace('crcartracker${resourceSuffix}', '-', '')
+    location: location
+    tags: tags
   }
 }
 
-// Secret names use '--' so the .NET KeyVault config provider maps them to '<section>:<key>'.
-resource secretCarTrackerPassword 'Microsoft.KeyVault/vaults/secrets@2024-04-01-preview' = {
-  parent: keyVault
-  name: 'CarTracker--Password'
-  properties: {
-    value: carTrackerDbPassword
-    contentType: 'text/plain'
+module containerEnv './modules/container-env.bicep' = {
+  name: 'containerEnv'
+  scope: rg
+  params: {
+    name: 'cae-cartracker-${resourceSuffix}'
+    location: location
+    tags: tags
+    logAnalyticsWorkspaceId: monitoring.outputs.logAnalyticsWorkspaceId
   }
 }
 
-resource secretConsultarPlacaEmail 'Microsoft.KeyVault/vaults/secrets@2024-04-01-preview' = {
-  parent: keyVault
-  name: 'ConsultarPlaca--Email'
-  properties: {
-    value: consultarPlacaEmail
-    contentType: 'text/plain'
+module api './modules/container-app.bicep' = {
+  name: 'api'
+  scope: rg
+  params: {
+    name: 'ca-cartracker-${resourceSuffix}'
+    location: location
+    // azd-service-name is REQUIRED for azd to identify which Bicep resource maps to which service in azure.yaml.
+    tags: union(tags, { 'azd-service-name': 'api' })
+    containerAppsEnvironmentId: containerEnv.outputs.id
+    userAssignedIdentityId: identity.outputs.id
+    userAssignedIdentityClientId: identity.outputs.clientId
+    keyVaultUri: keyvault.outputs.uri
+    appInsightsConnectionString: monitoring.outputs.appInsightsConnectionString
+    carTrackerHost: carTrackerHost
+    carTrackerDatabase: carTrackerDatabase
+    carTrackerUsername: carTrackerUsername
+    carTrackerPort: carTrackerPort
+    consultarPlacaUrl: consultarPlacaUrl
   }
 }
 
-resource secretConsultarPlacaApiKey 'Microsoft.KeyVault/vaults/secrets@2024-04-01-preview' = {
-  parent: keyVault
-  name: 'ConsultarPlaca--ApiKey'
-  properties: {
-    value: consultarPlacaApiKey
-    contentType: 'text/plain'
+// Phase 2: AcrPull → Container App system MI. Depends on outputs of both registry and api;
+// neither of those depends on this module — no circular dependency.
+module acrPullRole './modules/acr-pull-role.bicep' = {
+  name: 'acrPullRole'
+  scope: rg
+  params: {
+    acrName: registry.outputs.name
+    principalId: api.outputs.systemAssignedPrincipalId
   }
 }
 
-@description('Vault URI to use as KeyVault:Url in the app config.')
-output keyVaultUri string = keyVault.properties.vaultUri
+// ---- Outputs (UPPERCASE names become azd env vars accessible via `azd env get-values`) ----
 
-@description('Client ID of the UAMI; attach this identity to the app host (App Service / Container Apps).')
-output uamiClientId string = uami.properties.clientId
-
-@description('Resource ID of the UAMI; required when attaching the identity to a host.')
-output uamiResourceId string = uami.id
+output AZURE_LOCATION string = location
+output AZURE_RESOURCE_GROUP string = rg.name
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.loginServer
+output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
+output AZURE_CONTAINER_APPS_ENVIRONMENT_ID string = containerEnv.outputs.id
+output AZURE_KEY_VAULT_NAME string = keyvault.outputs.name
+output AZURE_KEY_VAULT_ENDPOINT string = keyvault.outputs.uri
+output AZURE_LOG_ANALYTICS_WORKSPACE_ID string = monitoring.outputs.logAnalyticsWorkspaceId
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.appInsightsConnectionString
+output AZURE_USER_ASSIGNED_IDENTITY_ID string = identity.outputs.id
+output AZURE_USER_ASSIGNED_IDENTITY_CLIENT_ID string = identity.outputs.clientId
+output API_URL string = 'https://${api.outputs.fqdn}'
+output SERVICE_API_NAME string = api.outputs.name

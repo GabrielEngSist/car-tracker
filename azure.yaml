@@ -1,0 +1,36 @@
+name: car-tracker
+metadata:
+  template: azd-init
+
+# Project-level hooks. `postprovision` runs after Bicep finishes (so the AcrPull role
+# assignment in infra/modules/acr-pull-role.bicep is guaranteed to exist) and wires the
+# Container App's system-assigned MI to ACR. Without this, `azd deploy` can push the image
+# but Container Apps can't pull it ("UNAUTHORIZED: authentication required") because the
+# app has no `registries` config telling it which identity to use.
+# Idempotent: re-running just confirms the existing wiring.
+hooks:
+  postprovision:
+    shell: sh
+    run: |
+      az containerapp registry set \
+        --resource-group "$AZURE_RESOURCE_GROUP" \
+        --name "$SERVICE_API_NAME" \
+        --server "$AZURE_CONTAINER_REGISTRY_ENDPOINT" \
+        --identity system \
+        --output none
+
+services:
+  api:
+    project: ./src/Car.Tracker.Api
+    language: dotnet
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      context: ../..
+    # Build the SPA on the host before packaging, so the Dockerfile only has to copy
+    # the pre-built dist/ into wwwroot. Keeps the Docker build single-language (.NET only),
+    # which dramatically lowers memory pressure on local docker daemons (Rancher Desktop).
+    hooks:
+      prepackage:
+        shell: sh
+        run: cd ../Car.Tracker.Presentation && npm install --include=optional --no-audit --no-fund && npm run build

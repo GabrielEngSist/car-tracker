@@ -1,0 +1,32 @@
+**/bin
+**/obj
+**/.vs
+**/node_modules
+**/.next
+**/.cache
+**/.git
+**/.github
+**/.vscode
+**/.idea
+**/.azure
+**/coverage
+**/.DS_Store
+**/*.log
+**/.env
+**/.env.*
+artifacts/
+venv/
+tests/
+features/
+*.md
+docker-compose*.yml
+src/Car.Tracker.Api/wwwroot/
+src/Car.Tracker.Presentation/node_modules/
+
+# NOTE: the SPA dist/ folder is intentionally allowed through. The prepackage hook in
+# azure.yaml runs `npm run build` in src/Car.Tracker.Presentation/ to produce
+# dist/, which the Dockerfile then copies into wwwroot/.
+# Scoped re-include only to that exact path so we don't accidentally pull in
+# unrelated "dist" folders from elsewhere.
+!src/Car.Tracker.Presentation/dist
+!src/Car.Tracker.Presentation/dist/**

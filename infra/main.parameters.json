@@ -2,11 +2,29 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "env": {
-      "value": "dev"
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
     },
-    "keyVaultName": {
-      "value": "kv-cartracker-dev"
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "deployerObjectId": {
+      "value": "${AZURE_PRINCIPAL_ID}"
+    },
+    "carTrackerHost": {
+      "value": "${CARTRACKER_HOST=ep-sweet-butterfly-amaxaspp-pooler.c-5.us-east-1.aws.neon.tech}"
+    },
+    "carTrackerDatabase": {
+      "value": "${CARTRACKER_DATABASE=car_tracker}"
+    },
+    "carTrackerUsername": {
+      "value": "${CARTRACKER_USERNAME=neondb_owner}"
+    },
+    "carTrackerPort": {
+      "value": "${CARTRACKER_PORT=5432}"
+    },
+    "consultarPlacaUrl": {
+      "value": "${CONSULTAR_PLACA_URL=https://api.consultarplaca.com.br/v2}"
     }
   }
 }
