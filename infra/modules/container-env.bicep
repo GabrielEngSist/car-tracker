@@ -44,3 +44,12 @@ resource env 'Microsoft.App/managedEnvironments@2024-03-01' = {
 output id string = env.id
 output name string = env.name
 output defaultDomain string = env.properties.defaultDomain
+
+// Inbound static IP for the environment. Use this as the target of an A record when binding an
+// apex (root) custom domain.
+output staticIp string = env.properties.staticIp
+
+// Stable per-environment GUID used by Container Apps to verify domain ownership. Add it as a TXT
+// record at `asuid.<hostname>` (or `asuid` for apex) BEFORE creating a managedCertificate or adding
+// a customDomain to a Container App in this environment.
+output customDomainVerificationId string = env.properties.customDomainConfiguration.customDomainVerificationId

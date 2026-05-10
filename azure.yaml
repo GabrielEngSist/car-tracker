@@ -2,22 +2,59 @@ name: car-tracker
 metadata:
   template: azd-init
 
-# Project-level hooks. `postprovision` runs after Bicep finishes (so the AcrPull role
-# assignment in infra/modules/acr-pull-role.bicep is guaranteed to exist) and wires the
-# Container App's system-assigned MI to ACR. Without this, `azd deploy` can push the image
-# but Container Apps can't pull it ("UNAUTHORIZED: authentication required") because the
-# app has no `registries` config telling it which identity to use.
-# Idempotent: re-running just confirms the existing wiring.
+# Project-level hooks. `postprovision` runs after Bicep finishes and applies two pieces of state
+# that Bicep can't cleanly express in a single pass:
+#
+#   1. ACR registry pull identity. Bicep grants AcrPull to the Container App's system MI, but
+#      doesn't (and can't, in one pass) populate the app's `registries[]` config — the AcrPull
+#      role assignment needs to exist first. Without this, `azd deploy` pushes the image to ACR
+#      successfully but Container Apps can't pull it ("UNAUTHORIZED: authentication required").
+#
+#   2. Custom-domain cert binding upgrade. Bicep binds each hostname with bindingType=Disabled
+#      (no cert) and then issues a managed cert for it. We upgrade each binding here to
+#      bindingType=SniEnabled with the managed cert attached — the step that requires referencing
+#      a cert that didn't exist when the Container App resource was deployed.
+#
+# Both steps are idempotent: re-running on a fully-configured env just confirms the desired state.
 hooks:
   postprovision:
     shell: sh
     run: |
+      set -e
+
+      echo "[postprovision] wiring ACR pull identity (system MI -> ACR)..."
       az containerapp registry set \
         --resource-group "$AZURE_RESOURCE_GROUP" \
         --name "$SERVICE_API_NAME" \
         --server "$AZURE_CONTAINER_REGISTRY_ENDPOINT" \
         --identity system \
         --output none
+
+      bind_custom_domain() {
+        # Usage: bind_custom_domain <hostname>
+        # Looks up the managed cert by hostname (the cert name is mc-<hostname-with-dots-as-dashes>)
+        # and upgrades the binding to SniEnabled + certId.
+        local hostname="$1"
+        if [ -z "$hostname" ]; then return 0; fi
+
+        local cert_name="mc-$(echo "$hostname" | tr '.' '-')"
+        echo "[postprovision] upgrading hostname binding: $hostname (cert: $cert_name)..."
+
+        # --environment is required when referencing a managed cert by short name (so az can
+        # resolve the cert resource within the env).
+        az containerapp hostname bind \
+          --resource-group "$AZURE_RESOURCE_GROUP" \
+          --name "$SERVICE_API_NAME" \
+          --hostname "$hostname" \
+          --environment "$AZURE_CONTAINER_APPS_ENVIRONMENT_ID" \
+          --certificate "$cert_name" \
+          --output none
+      }
+
+      bind_custom_domain "$CUSTOM_DOMAIN_SUBDOMAIN"
+      bind_custom_domain "$CUSTOM_DOMAIN_APEX"
+
+      echo "[postprovision] done."
 
 services:
   api:

@@ -74,6 +74,15 @@ param carTrackerPort string = '5432'
 @description('ConsultarPlaca base URL.')
 param consultarPlacaUrl string = 'https://api.consultarplaca.com.br/v2'
 
+@description('Hostnames to bind to ingress (e.g. ["app.example.com"]). Bound with bindingType=Disabled — i.e. registered against the app but with NO certificate. The postprovision hook in azure.yaml upgrades each binding to SniEnabled+certificateId after the managed cert is issued. This split is required because: (a) managed cert issuance requires the hostname to already be bound to an app in the env, and (b) Bicep cannot atomically bind a hostname and reference its as-yet-uncreated cert in the same pass.')
+param customDomainHostnames array = []
+
+@description('Canonical hostname the app should consider authoritative. Exposed as Hosting__CanonicalHost. Empty disables host-redirect middleware.')
+param canonicalHost string = ''
+
+@description('Comma-separated list of alternate hostnames to 301 to the canonical host. Exposed as Hosting__RedirectAlternatesCsv. Typically the apex when canonical is a subdomain.')
+param redirectAlternatesCsv string = ''
+
 resource app 'Microsoft.App/containerApps@2024-03-01' = {
   name: name
   location: location
@@ -99,6 +108,14 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             weight: 100
           }
         ]
+        // Hostnames are registered here with bindingType=Disabled (no cert). The postprovision
+        // hook in azure.yaml runs `az containerapp hostname bind` to upgrade each to SniEnabled
+        // with the managed cert that gets issued by custom-domain.bicep right after this app
+        // module deploys.
+        customDomains: [for h in customDomainHostnames: {
+          name: h
+          bindingType: 'Disabled'
+        }]
       }
       // No `registries` block. The postprovision hook in azure.yaml wires the system-assigned
       // identity to the ACR via `az containerapp registry set --identity system` after the
@@ -124,6 +141,8 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'CarTracker__Username', value: carTrackerUsername }
             { name: 'CarTracker__Port', value: carTrackerPort }
             { name: 'ConsultarPlaca__Url', value: consultarPlacaUrl }
+            { name: 'Hosting__CanonicalHost', value: canonicalHost }
+            { name: 'Hosting__RedirectAlternatesCsv', value: redirectAlternatesCsv }
           ]
           probes: [
             {

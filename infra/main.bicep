@@ -36,6 +36,21 @@ param carTrackerPort string = '5432'
 @description('ConsultarPlaca base URL.')
 param consultarPlacaUrl string = 'https://api.consultarplaca.com.br/v2'
 
+// ---- Custom domain (two-phase rollout) ---------------------------------------------------------
+// Phase A: deploy with `enableCustomDomainBindings=false` so the env exists and we can read its
+//          customDomainVerificationId + staticIp from outputs. Add DNS records at the registrar.
+// Phase B: set `enableCustomDomainBindings=true` to provision managed certs and bind hostnames.
+//          The canonical-host middleware in the app uses the canonical+alternates env vars to
+//          301-redirect apex traffic to the canonical subdomain regardless of this flag.
+@description('Canonical subdomain to bind (e.g. app.example.com). Validated via CNAME. Empty disables.')
+param customDomainSubdomain string = ''
+
+@description('Optional apex domain to ALSO bind (e.g. example.com). Validated via HTTP (A record). Empty disables. When set, the app 301s traffic from this host to customDomainSubdomain.')
+param customDomainApex string = ''
+
+@description('Whether to provision managed certs + bind hostnames in this pass. Set to false on the first deploy (so you can read verification ID/static IP from outputs and configure DNS), then flip to true.')
+param enableCustomDomainBindings bool = false
+
 // Short hash that makes resource names unique within a tenant while staying deterministic per env.
 var resourceSuffix = take(uniqueString(subscription().id, environmentName, location), 6)
 var tags = {
@@ -104,6 +119,28 @@ module containerEnv './modules/container-env.bicep' = {
   }
 }
 
+// Hostname list. Subdomain validates via CNAME, apex via HTTP. Order is informational only —
+// both hostnames are passed to the same Container App and then issued separate managed certs.
+//
+// Three-phase orchestration handled by Bicep + postprovision hook:
+//   Phase 1 (this Bicep pass): `api` module binds hostnames to the app with bindingType=Disabled
+//                              (no cert). This satisfies Azure's "hostname must be registered to
+//                              an app in the env before a managed cert can issue" constraint.
+//   Phase 2 (this Bicep pass): `customDomain` module deploys AFTER `api` (via dependsOn) and
+//                              issues a managed cert per hostname.
+//   Phase 3 (postprovision hook): `az containerapp hostname bind --certificate <cert>` upgrades
+//                                 each binding to SniEnabled, attaching the cert for HTTPS.
+//
+// Phase 3 lives outside Bicep because Bicep can't update the same resource twice in one pass
+// (binding the hostname Disabled, then re-binding it SniEnabled+certId).
+var subdomainEntry = customDomainSubdomain != '' ? [
+  { hostname: customDomainSubdomain, validationMethod: 'CNAME' }
+] : []
+var apexEntry = customDomainApex != '' ? [
+  { hostname: customDomainApex, validationMethod: 'HTTP' }
+] : []
+var customDomainHostnames = enableCustomDomainBindings ? concat(subdomainEntry, apexEntry) : []
+
 module api './modules/container-app.bicep' = {
   name: 'api'
   scope: rg
@@ -122,7 +159,27 @@ module api './modules/container-app.bicep' = {
     carTrackerUsername: carTrackerUsername
     carTrackerPort: carTrackerPort
     consultarPlacaUrl: consultarPlacaUrl
+    // Just the hostnames — the container-app module binds them with bindingType=Disabled.
+    customDomainHostnames: [for h in customDomainHostnames: h.hostname]
+    canonicalHost: customDomainSubdomain
+    // Apex is the only "alternate" host we redirect from in this setup. Comma-separated for easy
+    // env-var consumption by the app.
+    redirectAlternatesCsv: customDomainApex
   }
+}
+
+// Managed certs for the custom-domain hostnames. Deploys AFTER `api` (via explicit `dependsOn`)
+// because Azure requires each hostname to already be registered to a Container App in the env
+// before a managed cert can be issued for it. Module is a no-op when hostnames array is empty.
+module customDomain './modules/custom-domain.bicep' = {
+  name: 'customDomain'
+  scope: rg
+  params: {
+    environmentName: containerEnv.outputs.name
+    location: location
+    hostnames: customDomainHostnames
+  }
+  dependsOn: [api]
 }
 
 // Phase 2: AcrPull → Container App system MI. Depends on outputs of both registry and api;
@@ -151,3 +208,9 @@ output AZURE_USER_ASSIGNED_IDENTITY_ID string = identity.outputs.id
 output AZURE_USER_ASSIGNED_IDENTITY_CLIENT_ID string = identity.outputs.clientId
 output API_URL string = 'https://${api.outputs.fqdn}'
 output SERVICE_API_NAME string = api.outputs.name
+
+// Custom-domain DNS inputs. These are needed for Phase A (configuring records at registro.br
+// before flipping enableCustomDomainBindings=true).
+output AZURE_CONTAINER_APPS_ENVIRONMENT_DEFAULT_DOMAIN string = containerEnv.outputs.defaultDomain
+output AZURE_CONTAINER_APPS_ENVIRONMENT_STATIC_IP string = containerEnv.outputs.staticIp
+output AZURE_CONTAINER_APPS_ENVIRONMENT_VERIFICATION_ID string = containerEnv.outputs.customDomainVerificationId

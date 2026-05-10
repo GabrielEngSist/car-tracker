@@ -25,6 +25,15 @@
     },
     "consultarPlacaUrl": {
       "value": "${CONSULTAR_PLACA_URL=https://api.consultarplaca.com.br/v2}"
+    },
+    "customDomainSubdomain": {
+      "value": "${CUSTOM_DOMAIN_SUBDOMAIN=}"
+    },
+    "customDomainApex": {
+      "value": "${CUSTOM_DOMAIN_APEX=}"
+    },
+    "enableCustomDomainBindings": {
+      "value": "${ENABLE_CUSTOM_DOMAIN_BINDINGS=false}"
     }
   }
 }

@@ -1,4 +1,5 @@
 using Car.Tracker.Api.Configuration;
+using Car.Tracker.Api.Hosting;
 using Car.Tracker.Application;
 using Car.Tracker.Infrastructure;
 using System.Text.Json.Serialization;
@@ -13,6 +14,9 @@ internal static class WebApplicationBuilderExtensions
         builder.AddAzureKeyVaultIfConfigured();
 
         builder.Services.AddOpenApi();
+
+        builder.Services.Configure<CanonicalHostOptions>(
+            builder.Configuration.GetSection(CanonicalHostOptions.SectionName));
 
         builder.Services.ConfigureHttpJsonOptions(options =>
         {

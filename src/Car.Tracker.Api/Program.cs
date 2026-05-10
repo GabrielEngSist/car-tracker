@@ -16,6 +16,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseDeveloperExceptionPage();
 
+// Runs BEFORE static files / endpoints so apex requests are 301'd to the canonical subdomain
+// without ever serving wwwroot under the wrong hostname.
+app.UseCanonicalHost();
+
 await app.Services.MigrateDatabaseAsync();
 
 app.UseCarTrackerStaticAssets();
