@@ -9,6 +9,9 @@ internal static class WebApplicationBuilderExtensions
 {
     internal static WebApplicationBuilder AddCarTrackerServices(this WebApplicationBuilder builder)
     {
+        // Must run before any Configure<>() so secrets pulled from Key Vault are visible during binding.
+        builder.AddAzureKeyVaultIfConfigured();
+
         builder.Services.AddOpenApi();
 
         builder.Services.ConfigureHttpJsonOptions(options =>
